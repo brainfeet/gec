@@ -45,12 +45,15 @@
   (partial every? (comp (partial > 128)
                         int)))
 
+(def has-linebreak?
+  (partial re-find #".*\n.*"))
+
 (def get-bags
-  (partial map (comp (partial filter is-ascii?)
+  (partial map (comp (partial remove has-linebreak?)
+                     (partial filter is-ascii?)
                      (partial map :text))))
 
 (def convert
   (comp get-bags
         split-sentences
         parse-keywordize))
-
