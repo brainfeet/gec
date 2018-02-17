@@ -100,3 +100,9 @@
                   (get-dataset-path dataset "random.txt")
                   ">"
                   (get-dataset-path dataset "bpe.txt")))
+
+(defn split
+  [dataset n]
+  (with-open [file (io/reader (get-dataset-path dataset "random.txt"))]
+    (helpers/spit-parents (get-dataset-path dataset "validation/input.txt")
+                          (str/join "\n" (take n (line-seq file))))))
