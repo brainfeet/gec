@@ -20,7 +20,10 @@ def get_isolated_paths():
 
 # TODO rename this function as get_token_map
 def get_dictionary(token):
-    return {"lemma_": token.lemma_, "text": token.text, "tag_": token.tag_}
+    return {"is_sent_start": token.is_sent_start,
+            "lemma_": token.lemma_,
+            "text": token.text,
+            "tag_": token.tag_}
 
 
 parse_stringify = compose(json.dumps,
