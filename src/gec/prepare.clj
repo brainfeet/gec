@@ -49,3 +49,7 @@
         split-sentences
         parse-keywordize))
 
+(def is-ascii?
+  (partial every? (comp (partial > 128)
+                        int)))
+
