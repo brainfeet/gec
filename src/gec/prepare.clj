@@ -45,12 +45,17 @@
   (partial every? (comp (partial > 128)
                         int)))
 
-(def has-linebreak?
+(def has-newline?
   (partial re-find #".*\n.*"))
 
+(defn append-newline
+  [s]
+  (str s "\n"))
+
 (def get-plain
-  (comp (partial map (comp (partial str/join " ")
-                           (partial remove has-linebreak?)
+  (comp (partial map (comp append-newline
+                           (partial str/join " ")
+                           (partial remove has-newline?)
                            (partial filter is-ascii?)
                            (partial map :text)))))
 
@@ -58,3 +63,13 @@
   (comp get-plain
         split-sentences
         parse-keywordize))
+
+(defn make-append
+  [dataset]
+  (fn [sentence]
+    (spit (get-dataset-path dataset "combined.txt") sentence :append true)))
+
+(defn combine
+  [dataset]
+  (dorun (map (make-append dataset)
+              (mapcat convert (get-parsed-texts dataset)))))
