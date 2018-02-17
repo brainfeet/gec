@@ -57,3 +57,7 @@
   (comp get-bags
         split-sentences
         parse-keywordize))
+
+(def get-bag
+  (comp (partial s/transform* s/MAP-VALS count)
+        (partial group-by int)))
