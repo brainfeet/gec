@@ -90,3 +90,13 @@
                   (get-dataset-path dataset "random.txt")
                   ">"
                   (get-dataset-path dataset "codes.txt")))
+
+(defn apply-bpe
+  [dataset]
+  (command/python "bin/apply_bpe.py"
+                  "-c"
+                  (get-dataset-path dataset "codes.txt")
+                  "<"
+                  (get-dataset-path dataset "random.txt")
+                  ">"
+                  (get-dataset-path dataset "bpe.txt")))
