@@ -49,9 +49,10 @@
   (partial re-find #".*\n.*"))
 
 (def get-plain
-  (partial map (comp (partial remove has-linebreak?)
-                     (partial filter is-ascii?)
-                     (partial map :text))))
+  (comp (partial map (comp (partial str/join " ")
+                           (partial remove has-linebreak?)
+                           (partial filter is-ascii?)
+                           (partial map :text)))))
 
 (def convert
   (comp get-plain
