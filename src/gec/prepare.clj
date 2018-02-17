@@ -80,3 +80,13 @@
   (aid/build (partial command/shuf "-o")
              (partial (aid/flip get-dataset-path) "random.txt")
              (partial (aid/flip get-dataset-path) "combined.txt")))
+
+(defn learn-bpe
+  [dataset]
+  (command/python "bin/learn_bpe.py"
+                  "-s"
+                  "30000"
+                  "<"
+                  (get-dataset-path dataset "random.txt")
+                  ">"
+                  (get-dataset-path dataset "codes.txt")))
