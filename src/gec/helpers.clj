@@ -40,7 +40,7 @@
                          "&&"
                          "source"
                          "activate"
-                         "spike-native"
+                         "gec"
                          "&&"
                          "python"
                          more)))
