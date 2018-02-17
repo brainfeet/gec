@@ -34,3 +34,14 @@
 
 (def parse-keywordize
   (partial (aid/flip parse-string) true))
+
+(def split-sentences
+  (comp (partial map flatten)
+        (partial partition 2)
+        (partial s/setval* s/BEGINNING [[]])
+        (partial partition-by :is_sent_start)))
+
+(def convert
+  (comp split-sentences
+        parse-keywordize))
+
