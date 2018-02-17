@@ -19,3 +19,18 @@
                  "--path")
         fs/absolute
         (partial (aid/flip get-dataset-path) "isolated")))
+
+(defn make-find-files
+  [directory-name re]
+  (comp (partial (aid/flip fs/find-files) re)
+        (partial (aid/flip get-dataset-path) directory-name)))
+
+(def find-parsed-files
+  (make-find-files "parsed" #"\d+\.json"))
+
+(def get-parsed-texts
+  (comp (partial map slurp)
+        find-parsed-files))
+
+(def parse-keywordize
+  (partial (aid/flip parse-string) true))
