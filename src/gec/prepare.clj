@@ -69,7 +69,9 @@
   (fn [sentence]
     (spit (get-dataset-path dataset "combined.txt") sentence :append true)))
 
-(defn combine
-  [dataset]
-  (dorun (map (make-append dataset)
-              (mapcat convert (get-parsed-texts dataset)))))
+(def combine
+  (comp dorun
+        (aid/build map
+                   make-append
+                   (comp (partial mapcat convert)
+                         get-parsed-texts))))
