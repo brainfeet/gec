@@ -41,7 +41,11 @@
         (partial s/setval* s/BEGINNING [[]])
         (partial partition-by :is_sent_start)))
 
+(def get-text
+  (partial map (partial map :text)))
+
 (def convert
-  (comp split-sentences
+  (comp get-text
+        split-sentences
         parse-keywordize))
 
