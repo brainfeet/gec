@@ -75,3 +75,8 @@
                    make-append
                    (comp (partial mapcat convert)
                          get-parsed-texts))))
+
+(def randomize
+  (aid/build (partial command/shuf "-o")
+             (partial (aid/flip get-dataset-path) "random.txt")
+             (partial (aid/flip get-dataset-path) "combined.txt")))
