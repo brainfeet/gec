@@ -1,0 +1,21 @@
+(ns gec.prepare
+  (:require [clojure.java.io :as io]
+            [clojure.java.shell :as sh]
+            [clojure.string :as str]
+            [aid.core :as aid]
+            [cats.monad.either :as either]
+            [cheshire.core :refer :all]
+            [com.rpl.specter :as s]
+            [me.raynes.fs :as fs]
+            [gec.command :as command]
+            [gec.helpers :as helpers]))
+
+(def get-dataset-path
+  (partial helpers/join-paths "resources/dataset"))
+
+(def parse
+  (comp (partial helpers/python
+                 "gec/parse.py"
+                 "--path")
+        fs/absolute
+        (partial (aid/flip get-dataset-path) "isolated")))

@@ -68,33 +68,5 @@
       <textMaps />
     </LinkMapSettings>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" />
-  <component name="SbtLocalSettings">
-    <option name="modificationStamps">
-      <map>
-        <entry key="$USER_HOME$/Downloads/ReactiveMessagingPatterns_ActorModel" value="1477463246614" />
-        <entry key="$PROJECT_DIR$/../../../../clone/ReactiveMessagingPatterns_ActorModel" value="1477463246000" />
-        <entry key="$USER_HOME$/tmp/fpinscala" value="1478749872141" />
-      </map>
-    </option>
-    <option name="externalProjectsViewState">
-      <projects_view />
-    </option>
-  </component>
-  <component name="masterDetails">
-    <states>
-      <state key="ProjectJDKs.UI">
-        <settings>
-          <last-edited>1.8</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-    </states>
-  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" default="false" project-jdk-name="Python 3.6.2 (~/anaconda3/envs/gec/bin/python)" project-jdk-type="Python SDK" />
 </project>
