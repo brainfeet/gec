@@ -48,16 +48,12 @@
 (def has-linebreak?
   (partial re-find #".*\n.*"))
 
-(def get-bags
+(def get-plain
   (partial map (comp (partial remove has-linebreak?)
                      (partial filter is-ascii?)
                      (partial map :text))))
 
 (def convert
-  (comp get-bags
+  (comp get-plain
         split-sentences
         parse-keywordize))
-
-(def get-bag
-  (comp (partial s/transform* s/MAP-VALS count)
-        (partial group-by int)))
