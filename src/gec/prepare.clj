@@ -41,15 +41,16 @@
         (partial s/setval* s/BEGINNING [[]])
         (partial partition-by :is_sent_start)))
 
-(def get-text
-  (partial map (partial map :text)))
-
-(def convert
-  (comp get-text
-        split-sentences
-        parse-keywordize))
-
 (def is-ascii?
   (partial every? (comp (partial > 128)
                         int)))
+
+(def get-bags
+  (partial map (comp (partial filter is-ascii?)
+                     (partial map :text))))
+
+(def convert
+  (comp get-bags
+        split-sentences
+        parse-keywordize))
 
