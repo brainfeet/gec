@@ -100,6 +100,22 @@
                   ">"
                   (get-dataset-path dataset "bpe.txt")))
 
+(def bag
+  (comp (partial s/transform* s/MAP-VALS count)
+        (partial group-by int)))
+
+(def split-tokens
+  (partial (aid/flip str/split) #" "))
+
+(defn bag-input
+  [combined sentences]
+  (if (= combined "random.txt")
+    (map (comp generate-string
+               (partial map bag)
+               split-tokens)
+         sentences)
+    sentences))
+
 (defn split-validation
   [dataset n]
   (map (fn [combined split]
@@ -107,6 +123,7 @@
            (->> file
                 line-seq
                 (take n)
+                (bag-input combined)
                 (str/join "\n")
                 (helpers/spit-parents (get-dataset-path dataset
                                                         "validation"
@@ -117,7 +134,7 @@
 (def get-count-filename
   (comp (partial (aid/flip str) ".txt")
         count
-        (partial (aid/flip str/split) #" ")))
+        split-tokens))
 
 (defn split-training
   [dataset n]
@@ -142,7 +159,3 @@
 
 (def split
   (juxt split-training split-validation))
-
-(def bag
-  (comp (partial s/transform* s/MAP-VALS count)
-        (partial group-by int)))
