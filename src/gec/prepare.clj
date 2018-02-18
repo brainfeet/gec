@@ -104,8 +104,13 @@
   [dataset n]
   (map (fn [combined split]
          (with-open [file (io/reader (get-dataset-path dataset combined))]
-           (helpers/spit-parents (get-dataset-path dataset "validation" split)
-                                 (str/join "\n" (take n (line-seq file))))))
+           (->> file
+                line-seq
+                (take n)
+                (str/join "\n")
+                (helpers/spit-parents (get-dataset-path dataset
+                                                        "validation"
+                                                        split)))))
        ["random.txt" "bpe.txt"]
        ["input.txt" "output.txt"]))
 
