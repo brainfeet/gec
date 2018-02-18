@@ -137,3 +137,7 @@
 
 (def split
   (juxt split-training split-validation))
+
+(def bag
+  (comp (partial s/transform* s/MAP-VALS count)
+        (partial group-by int)))
