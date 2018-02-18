@@ -101,16 +101,12 @@
                   ">"
                   (get-dataset-path dataset "bpe.txt")))
 
-(defn make-split-validation*
-  [dataset n]
-  (fn [combined split]
-    (with-open [file (io/reader (get-dataset-path dataset combined))]
-      (helpers/spit-parents (get-dataset-path dataset "validation" split)
-                            (str/join "\n" (take n (line-seq file)))))))
-
 (defn split-validation
   [dataset n]
-  (map (make-split-validation* dataset n)
+  (map (fn [combined split]
+         (with-open [file (io/reader (get-dataset-path dataset combined))]
+           (helpers/spit-parents (get-dataset-path dataset "validation" split)
+                                 (str/join "\n" (take n (line-seq file))))))
        ["random.txt" "bpe.txt"]
        ["input.txt" "output.txt"]))
 
@@ -119,22 +115,26 @@
         count
         (partial (aid/flip str/split) #" ")))
 
-(defn make-split-training*
-  [dataset n]
-  (fn [combined split]
-    (with-open [file (io/reader (get-dataset-path dataset combined))]
-      (dorun (map (fn [sentence]
-                    (helpers/spit-parents (get-dataset-path dataset
-                                                            "training"
-                                                            split
-                                                            (get-count-filename sentence))
-                                          (str sentence "\n")
-                                          :append
-                                          true))
-                  (drop n (line-seq file)))))))
-
 (defn split-training
   [dataset n]
-  (map (make-split-training* dataset n)
+  (map (fn [combined split]
+         (with-open [file (io/reader (get-dataset-path dataset combined))]
+           (->> file
+                line-seq
+                (drop n)
+                (map
+                  (fn [sentence]
+                    (helpers/spit-parents
+                      (get-dataset-path dataset
+                                        "training"
+                                        split
+                                        (get-count-filename sentence))
+                      (str sentence "\n")
+                      :append
+                      true)))
+                dorun)))
        ["random.txt" "bpe.txt"]
        ["input" "output"]))
+
+(def split
+  (juxt split-training split-validation))
