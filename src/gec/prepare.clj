@@ -136,6 +136,15 @@
         count
         split-tokens))
 
+(defn bag-sentence
+  [combined sentence]
+  (if (= combined "random.txt")
+    (->> sentence
+         split-tokens
+         (map bag)
+         generate-string)
+    sentence))
+
 (defn split-training
   [dataset n]
   (map (fn [combined split]
@@ -150,7 +159,7 @@
                                         "training"
                                         split
                                         (get-count-filename sentence))
-                      (append-newline sentence)
+                      (append-newline (bag-sentence combined sentence))
                       :append
                       true)))
                 dorun)))
