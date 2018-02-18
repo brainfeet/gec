@@ -113,3 +113,16 @@
   (map (make-split-validation* dataset n)
        ["random.txt" "bpe.txt"]
        ["input.txt" "output.txt"]))
+
+(defn split-training
+  [dataset n]
+  (with-open [file (io/reader (get-dataset-path dataset "random.txt"))]
+    (dorun (map (fn [sentence]
+                  (helpers/spit-parents (get-dataset-path dataset
+                                                          "training"
+                                                          "input"
+                                                          (str (count (str/split sentence #" ")) ".txt"))
+                                        (str sentence "\n")
+                                        :append
+                                        true))
+                (drop n (line-seq file))))))
