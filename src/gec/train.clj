@@ -9,7 +9,6 @@
             [gec.helpers :as helpers]
             [gec.command :as command]))
 
-
 (def current
   (f/unparse (f/formatter "yyyyMMddhhmmss") (t/now)))
 
