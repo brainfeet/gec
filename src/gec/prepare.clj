@@ -107,7 +107,7 @@
 (def split-tokens
   (partial (aid/flip str/split) #" "))
 
-(defn bag-input
+(defn bag-validation
   [combined sentences]
   (if (= combined "random.txt")
     (map (comp generate-string
@@ -123,7 +123,7 @@
            (->> file
                 line-seq
                 (take n)
-                (bag-input combined)
+                (bag-validation combined)
                 (str/join "\n")
                 (helpers/spit-parents (get-dataset-path dataset
                                                         "validation"
