@@ -101,8 +101,15 @@
                   ">"
                   (get-dataset-path dataset "bpe.txt")))
 
-(defn split
+(defn make-split-validation*
   [dataset n]
-  (with-open [file (io/reader (get-dataset-path dataset "random.txt"))]
-    (helpers/spit-parents (get-dataset-path dataset "validation/input.txt")
-                          (str/join "\n" (take n (line-seq file))))))
+  (fn [combined split]
+    (with-open [file (io/reader (get-dataset-path dataset combined))]
+      (helpers/spit-parents (get-dataset-path dataset "validation" split)
+                            (str/join "\n" (take n (line-seq file)))))))
+
+(defn split-validation
+  [dataset n]
+  (map (make-split-validation* dataset n)
+       ["random.txt" "bpe.txt"]
+       ["input.txt" "output.txt"]))
