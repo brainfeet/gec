@@ -114,6 +114,11 @@
        ["random.txt" "bpe.txt"]
        ["input.txt" "output.txt"]))
 
+(def get-count-filename
+  (comp (partial (aid/flip str) ".txt")
+        count
+        (partial (aid/flip str/split) #" ")))
+
 (defn make-split-training*
   [dataset n]
   (fn [combined split]
@@ -122,7 +127,7 @@
                     (helpers/spit-parents (get-dataset-path dataset
                                                             "training"
                                                             split
-                                                            (str (count (str/split sentence #" ")) ".txt"))
+                                                            (get-count-filename sentence))
                                           (str sentence "\n")
                                           :append
                                           true))
