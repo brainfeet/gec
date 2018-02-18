@@ -48,9 +48,8 @@
 (def has-newline?
   (partial re-find #".*\n.*"))
 
-(defn append-newline
-  [s]
-  (str s "\n"))
+(def append-newline
+  (partial (aid/flip str) "\n"))
 
 (def get-plain
   (comp (partial map (comp append-newline
@@ -129,7 +128,7 @@
                                         "training"
                                         split
                                         (get-count-filename sentence))
-                      (str sentence "\n")
+                      (append-newline sentence)
                       :append
                       true)))
                 dorun)))
