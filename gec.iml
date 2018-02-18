@@ -16,6 +16,7 @@
     <orderEntry type="library" name="Leiningen: aid:0.1.1" level="project" />
     <orderEntry type="library" name="Leiningen: args4j:2.33" level="project" />
     <orderEntry type="library" name="Leiningen: cheshire:5.8.0" level="project" />
+    <orderEntry type="library" name="Leiningen: clj-time:0.14.2" level="project" />
     <orderEntry type="library" name="Leiningen: clj-tuple:0.2.2" level="project" />
     <orderEntry type="library" name="Leiningen: clojure-complete:0.2.4" level="project" />
     <orderEntry type="library" name="Leiningen: com.fasterxml.jackson.core/jackson-core:2.9.0" level="project" />
@@ -31,6 +32,7 @@
     <orderEntry type="library" name="Leiningen: com.google.protobuf/protobuf-java:3.0.2" level="project" />
     <orderEntry type="library" name="Leiningen: com.rpl/specter:1.0.5" level="project" />
     <orderEntry type="library" name="Leiningen: funcool/cats:2.1.0" level="project" />
+    <orderEntry type="library" name="Leiningen: joda-time:2.9.7" level="project" />
     <orderEntry type="library" name="Leiningen: me.raynes/fs:1.4.6" level="project" />
     <orderEntry type="library" name="Leiningen: org.apache.commons/commons-compress:1.8" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/clojure:1.9.0" level="project" />

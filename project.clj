@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [aid "0.1.1"]
                  [cheshire "5.8.0"]
+                 [clj-time "0.14.2"]
                  [com.rpl/specter "1.0.5"]
                  [funcool/cats "2.1.0"]
                  [me.raynes/fs "1.4.6"]]

@@ -58,3 +58,6 @@ fabric.properties
 ### gec
 resources/dataset
 !.gitkeep
+resources/hyperparameter/*
+!resources/hyperparameter/template.json
+resources/runs
