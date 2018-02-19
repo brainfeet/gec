@@ -86,15 +86,15 @@ def get_glob(m):
                      "*")
 
 
-def get_data(filename):
+def get_raw_data(filename):
     with open(filename) as file:
         for line in file:
             yield json.loads(line)
 
 
-def get_raw_batches(m):
+def get_batches(m):
     return map(tuple, (
-        mapcat(compose(partial(partition, m["batch_size"]), get_data),
+        mapcat(compose(partial(partition, m["batch_size"]), get_raw_data),
                cycle(glob.glob(get_glob(m))))))
 
 
