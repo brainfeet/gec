@@ -114,8 +114,18 @@ def get(m, k):
     return m[k]
 
 
+def if_(test, then, else_):
+    if test:
+        return then
+    return else_
+
+
 def get_training_variables_(m):
-    return map(partial(map, partial(flip(get), m["k"])), m["raw_batches"])
+    return map(compose(if_(m["k"] == "bag",
+                           compose(torch.LongTensor, tuple),
+                           identity),
+                       partial(map, partial(flip(get), m["k"]))),
+               m["raw_batches"])
 
 
 def make_get_training_variables(m):
@@ -132,8 +142,4 @@ def make_get_training_variables(m):
 def get_batches(m):
     return apply(partial(map, vector),
                  map(make_get_training_variables(m),
-                     ["word", "bag", "bpe"]))
-
-
-if __name__ == "__main__":
-    pass
+                     ["bag", "word", "bpe"]))
