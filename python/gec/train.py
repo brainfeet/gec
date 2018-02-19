@@ -92,5 +92,10 @@ def get_data(filename):
             yield json.loads(line)
 
 
+def get_raw_batches(m):
+    return map(tuple, (
+        mapcat(compose(partial(partition, m["batch_size"]), get_data),
+               cycle(glob.glob(get_glob(m))))))
+
 if __name__ == "__main__":
     pass
