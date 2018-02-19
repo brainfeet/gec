@@ -143,15 +143,6 @@
         count
         split-tokens))
 
-(defn bag-sentence
-  [process combined sentence]
-  (if process
-    (->> sentence
-         split-tokens
-         (map bag)
-         generate-string)
-    sentence))
-
 (defn split-training
   [dataset n]
   (with-open [random-file (io/reader (get-dataset-path dataset "random.txt"))]
