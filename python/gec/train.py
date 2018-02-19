@@ -39,5 +39,19 @@ get_hyperparameter = compose(json.loads,
                              slurp,
                              partial(get_hyperparameter_path))
 
+bag_size = 128
+
+
+class Encoder(nn.Module):
+    def __init__(self, m):
+        super().__init__()
+        self.gru = nn.GRU(bag_size, m["hidden_size"], bidirectional=True)
+
+    def forward(self, m):
+        embedding, states = self.gru(m["input"], m["states"])
+        return {"embedding": embedding,
+                "states": states}
+
+
 if __name__ == "__main__":
     pass

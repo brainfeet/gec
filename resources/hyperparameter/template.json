@@ -1,4 +1,5 @@
 {
   "batch_size": 2,
-  "dataset": "sample"
+  "dataset": "sample",
+  "hidden_size": 3
 }
