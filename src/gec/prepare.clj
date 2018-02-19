@@ -154,26 +154,31 @@
 
 (defn split-training
   [dataset n]
-  (map (fn [combined split process]
-         (with-open [file (io/reader (get-dataset-path dataset combined))]
-           (->> file
-                line-seq
-                (drop n)
-                (map
-                  (fn [sentence]
-                    (helpers/spit-parents
-                      (get-dataset-path dataset
-                                        "split"
-                                        "training"
-                                        split
-                                        (get-count-filename sentence))
-                      (append-newline (bag-sentence process combined sentence))
-                      :append
-                      true)))
-                dorun)))
-       ["random.txt" "random.txt" "bpe.txt"]
-       ["word" "bag" "output"]
-       [false true false]))
+  (with-open [random-file (io/reader (get-dataset-path dataset "random.txt"))]
+    (with-open [bpe-file (io/reader (get-dataset-path dataset "bpe.txt"))]
+      (->> random-file
+           line-seq
+           (drop n)
+           (map (fn [sentence]
+                  {:word sentence
+                   :bag  (->> sentence
+                              split-tokens
+                              (map bag))}))
+           (map (fn [bpe m]
+                  (s/setval :bpe bpe m))
+                (->> bpe-file
+                     line-seq))
+           (map
+             (fn [m]
+               (helpers/spit-parents
+                 (get-dataset-path dataset
+                                   "split"
+                                   "training"
+                                   (get-count-filename (:word m)))
+                 (append-newline (generate-string m))
+                 :append
+                 true)))
+           dorun))))
 
 (def split
   (juxt split-training split-validation))
