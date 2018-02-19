@@ -126,6 +126,7 @@
                 (bag-validation process)
                 (str/join "\n")
                 (helpers/spit-parents (get-dataset-path dataset
+                                                        "split"
                                                         "validation"
                                                         split)))))
        ["random.txt" "random.txt" "bpe.txt"]
@@ -157,6 +158,7 @@
                   (fn [sentence]
                     (helpers/spit-parents
                       (get-dataset-path dataset
+                                        "split"
                                         "training"
                                         split
                                         (get-count-filename sentence))

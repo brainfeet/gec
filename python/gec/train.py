@@ -77,5 +77,14 @@ def get_states(m):
     return tuple(repeatedly(partial(get_state, m), 2))
 
 
+def get_glob(m):
+    return path.join(resources_path,
+                     "dataset",
+                     m["dataset"],
+                     "split",
+                     m["split"],
+                     "*")
+
+
 if __name__ == "__main__":
     pass
