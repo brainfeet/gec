@@ -138,8 +138,8 @@
         split-tokens))
 
 (defn bag-sentence
-  [combined sentence]
-  (if (= combined "random.txt")
+  [process combined sentence]
+  (if process
     (->> sentence
          split-tokens
          (map bag)
@@ -148,7 +148,7 @@
 
 (defn split-training
   [dataset n]
-  (map (fn [combined split]
+  (map (fn [combined split process]
          (with-open [file (io/reader (get-dataset-path dataset combined))]
            (->> file
                 line-seq
@@ -160,12 +160,13 @@
                                         "training"
                                         split
                                         (get-count-filename sentence))
-                      (append-newline (bag-sentence combined sentence))
+                      (append-newline (bag-sentence process combined sentence))
                       :append
                       true)))
                 dorun)))
-       ["random.txt" "bpe.txt"]
-       ["input" "output"]))
+       ["random.txt" "random.txt" "bpe.txt"]
+       ["word" "bag" "output"]
+       [false true false]))
 
 (def split
   (juxt split-training split-validation))
