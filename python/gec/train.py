@@ -53,5 +53,29 @@ class Encoder(nn.Module):
                 "states": states}
 
 
+def get_cuda(x):
+    if torch.cuda.is_available():
+        return x.cuda()
+    return x
+
+
+def get_bidirectional_size(n):
+    return n * 2
+
+
+num_layers = 1
+
+
+def get_state(m):
+    return autograd.Variable(init.kaiming_normal(
+        get_cuda(torch.zeros(get_bidirectional_size(1),
+                             m["batch_size"],
+                             m["hidden_size"]))))
+
+
+def get_states(m):
+    return tuple(repeatedly(partial(get_state, m), 2))
+
+
 if __name__ == "__main__":
     pass
