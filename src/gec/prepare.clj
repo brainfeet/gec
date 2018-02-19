@@ -100,9 +100,15 @@
                   ">"
                   (get-dataset-path dataset "bpe.txt")))
 
-(def bag
-  (comp (partial s/transform* s/MAP-VALS count)
-        (partial group-by int)))
+;(def bag
+;  (comp (partial s/transform* s/MAP-VALS count)
+;        (partial group-by int)))
+
+(defn bag
+  [s]
+  (reduce (fn [reduction c]
+            (s/transform (s/nthpath (int c)) inc reduction))
+          (repeat 128 0) s))
 
 (def split-tokens
   (partial (aid/flip str/split) #" "))

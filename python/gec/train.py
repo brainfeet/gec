@@ -95,7 +95,7 @@ def get_raw_data(filename):
 def transform_data(m):
     # TODO use lens
     # TODO implement transformation
-    return {"bag": m["bag"],
+    return {"bag": torch.LongTensor(m["bag"]),
             "word": m["word"],
             "bpe": m["bpe"]}
 
