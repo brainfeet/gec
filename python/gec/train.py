@@ -92,9 +92,19 @@ def get_raw_data(filename):
             yield json.loads(line)
 
 
+def transform_data(m):
+    # TODO use lens
+    # TODO implement transformation
+    return {"bag": m["bag"],
+            "word": m["word"],
+            "bpe": m["bpe"]}
+
+
 def get_batches(m):
     return map(tuple, (
-        mapcat(compose(partial(partition, m["batch_size"]), get_raw_data),
+        mapcat(compose(partial(partition, m["batch_size"]),
+                       partial(map, transform_data),
+                       get_raw_data),
                cycle(glob.glob(get_glob(m))))))
 
 
