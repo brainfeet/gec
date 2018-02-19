@@ -85,5 +85,12 @@ def get_glob(m):
                      "training",
                      "*")
 
+
+def get_data(filename):
+    with open(filename) as file:
+        for line in file:
+            yield json.loads(line)
+
+
 if __name__ == "__main__":
     pass
