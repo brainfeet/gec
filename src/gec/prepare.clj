@@ -122,6 +122,7 @@
     (with-open [bpe-file (io/reader (get-dataset-path dataset "bpe.txt"))]
       (->> random-file
            line-seq
+           (take n)
            (map (fn [sentence]
                   {:word sentence
                    :bag  (->> sentence
@@ -132,7 +133,6 @@
                         (s/setval :bpe bpe m)))
                 (->> bpe-file
                      line-seq))
-           (take n)
            (str/join "\n")
            (helpers/spit-parents (get-dataset-path dataset
                                                    "split"
