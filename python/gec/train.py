@@ -82,9 +82,8 @@ def get_glob(m):
                      "dataset",
                      m["dataset"],
                      "split",
-                     m["split"],
+                     "training",
                      "*")
-
 
 if __name__ == "__main__":
     pass
