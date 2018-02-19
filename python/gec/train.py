@@ -97,5 +97,6 @@ def get_raw_batches(m):
         mapcat(compose(partial(partition, m["batch_size"]), get_data),
                cycle(glob.glob(get_glob(m))))))
 
+
 if __name__ == "__main__":
     pass
