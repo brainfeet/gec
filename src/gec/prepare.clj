@@ -116,6 +116,13 @@
          sentences)
     sentences))
 
+(defn get-word-bag
+  [sentence]
+  {:word sentence
+   :bag  (->> sentence
+              split-tokens
+              (map bag))})
+
 (defn split-validation
   [dataset n]
   (with-open [random-file (io/reader (get-dataset-path dataset "random.txt"))]
@@ -123,11 +130,7 @@
       (->> random-file
            line-seq
            (take n)
-           (map (fn [sentence]
-                  {:word sentence
-                   :bag  (->> sentence
-                              split-tokens
-                              (map bag))}))
+           (map get-word-bag)
            (map (comp generate-string
                       (fn [bpe m]
                         (s/setval :bpe bpe m)))
@@ -150,11 +153,7 @@
       (->> random-file
            line-seq
            (drop n)
-           (map (fn [sentence]
-                  {:word sentence
-                   :bag  (->> sentence
-                              split-tokens
-                              (map bag))}))
+           (map get-word-bag)
            (map (fn [bpe m]
                   (s/setval :bpe bpe m))
                 (->> bpe-file
