@@ -92,20 +92,47 @@ def get_raw_data(filename):
             yield json.loads(line)
 
 
-def transform_data(m):
-    # TODO use lens
-    # TODO implement transformation
-    return {"bag": torch.LongTensor(m["bag"]),
-            "word": m["word"],
-            "bpe": m["bpe"]}
+def apply(f, *more):
+    return f(*butlast(more), *last(more))
+
+
+def vector(*more):
+    return tuple(more)
+
+
+def flip(f):
+    def g(x, *more):
+        if empty(more):
+            def h(y, *more_):
+                apply(f, y, x, more_)
+            return h
+        return apply(f, first(more), x, rest(more))
+    return g
+
+
+def get(m, k):
+    return m[k]
+
+
+def get_training_variables_(m):
+    return map(partial(map, partial(flip(get), m["k"])), m["raw_batches"])
+
+
+def make_get_training_variables(m):
+    def get_training_variables(k):
+        return get_training_variables_(
+            merge(m, {"k": k,
+                      "raw_batches":
+                          mapcat(compose(partial(partition, m["batch_size"]),
+                                         get_raw_data),
+                                 cycle(glob.glob(get_glob(m))))}))
+    return get_training_variables
 
 
 def get_batches(m):
-    return map(tuple, (
-        mapcat(compose(partial(partition, m["batch_size"]),
-                       partial(map, transform_data),
-                       get_raw_data),
-               cycle(glob.glob(get_glob(m))))))
+    return apply(partial(map, vector),
+                 map(make_get_training_variables(m),
+                     ["word", "bag", "bpe"]))
 
 
 if __name__ == "__main__":
