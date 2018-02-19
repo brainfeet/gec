@@ -118,20 +118,25 @@
 
 (defn split-validation
   [dataset n]
-  (map (fn [combined split process]
-         (with-open [file (io/reader (get-dataset-path dataset combined))]
-           (->> file
-                line-seq
-                (take n)
-                (bag-validation process)
-                (str/join "\n")
-                (helpers/spit-parents (get-dataset-path dataset
-                                                        "split"
-                                                        "validation"
-                                                        split)))))
-       ["random.txt" "random.txt" "bpe.txt"]
-       ["word.txt" "bag.txt" "output.txt"]
-       [false true false]))
+  (with-open [random-file (io/reader (get-dataset-path dataset "random.txt"))]
+    (with-open [bpe-file (io/reader (get-dataset-path dataset "bpe.txt"))]
+      (->> random-file
+           line-seq
+           (map (fn [sentence]
+                  {:word sentence
+                   :bag  (->> sentence
+                              split-tokens
+                              (map bag))}))
+           (map (comp generate-string
+                      (fn [bpe m]
+                        (s/setval :bpe bpe m)))
+                (->> bpe-file
+                     line-seq))
+           (take n)
+           (str/join "\n")
+           (helpers/spit-parents (get-dataset-path dataset
+                                                   "split"
+                                                   "validation.txt"))))))
 
 (def get-count-filename
   (comp (partial (aid/flip str) ".txt")
