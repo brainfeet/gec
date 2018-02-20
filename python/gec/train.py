@@ -15,6 +15,7 @@ import torch
 import torch.autograd as autograd
 import torch.cuda as cuda
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.nn.init as init
 import torch.optim as optim
 import torchtext.vocab as vocab
@@ -49,9 +50,22 @@ class Encoder(nn.Module):
                           bidirectional=True)
 
     def forward(self, m):
-        embedding, hidden = self.gru(m["input"], m["hidden"])
+        embedding, hidden = self.gru(m["encoder_input"], m["hidden"])
         return {"embedding": embedding,
                 "hidden": hidden}
+
+
+class Decoder(nn.Module):
+    def __init__(self, m):
+        super().__init__()
+
+        self.embedding = nn.Embedding(m["vocabulary_size"], m["hidden_size"])
+        self.attention = nn.Linear(m["hidden_size"] * 2, m["max_length"])
+        self.attention_combine = nn.Linear(m["hidden_size"] * 2,
+                                           m["hidden_size"])
+        self.dropout = nn.Dropout(m["dropout_probability"])
+        self.gru = nn.GRU(m["hidden_size"], m["hidden_size"])
+        self.out = nn.Linear(m["hidden_size"], m["vocabulary_size"])
 
 
 def get_cuda(x):
