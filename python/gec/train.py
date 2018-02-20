@@ -49,9 +49,9 @@ class Encoder(nn.Module):
                           bidirectional=True)
 
     def forward(self, m):
-        embedding, state = self.gru(m["input"], m["state"])
+        embedding, hidden = self.gru(m["input"], m["hidden"])
         return {"embedding": embedding,
-                "state": state}
+                "hidden": hidden}
 
 
 def get_cuda(x):
@@ -67,7 +67,7 @@ def get_bidirectional_size(n):
 num_layers = 1
 
 
-def get_state(m):
+def get_hidden(m):
     return autograd.Variable(init.kaiming_normal(
         get_cuda(torch.zeros(get_bidirectional_size(1),
                              m["batch_size"],
