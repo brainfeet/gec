@@ -123,7 +123,7 @@ def if_(test, then, else_):
 def get_training_variables_(m):
     # TODO transform word and bpe
     return map(compose(if_(m["k"] == "bag",
-                           compose(torch.LongTensor, tuple),
+                           compose(autograd.Variable, torch.LongTensor, tuple),
                            identity),
                        partial(map, partial(flip(get), m["k"]))),
                m["raw_batches"])
