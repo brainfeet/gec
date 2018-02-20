@@ -45,7 +45,8 @@ bag_size = 128
 class Encoder(nn.Module):
     def __init__(self, m):
         super().__init__()
-        self.gru = nn.GRU(bag_size, m["hidden_size"], bidirectional=True)
+        self.gru = nn.GRU(bag_size, m["hidden_size"], batch_first=True,
+                          bidirectional=True)
 
     def forward(self, m):
         embedding, states = self.gru(m["input"], m["states"])
@@ -71,10 +72,6 @@ def get_state(m):
         get_cuda(torch.zeros(get_bidirectional_size(1),
                              m["batch_size"],
                              m["hidden_size"]))))
-
-
-def get_states(m):
-    return tuple(repeatedly(partial(get_state, m), 2))
 
 
 def get_glob(m):
@@ -123,7 +120,7 @@ def if_(test, then, else_):
 def get_training_variables_(m):
     # TODO transform word and bpe
     return map(compose(if_(m["k"] == "bag",
-                           compose(autograd.Variable, torch.LongTensor, tuple),
+                           compose(autograd.Variable, torch.FloatTensor, tuple),
                            identity),
                        partial(map, partial(flip(get), m["k"]))),
                m["raw_batches"])
