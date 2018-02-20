@@ -1,6 +1,7 @@
 (ns gec.prepare
   (:require [clojure.java.io :as io]
             [clojure.java.shell :as sh]
+            [clojure.set :as set]
             [clojure.string :as str]
             [aid.core :as aid]
             [cats.monad.either :as either]
@@ -178,3 +179,25 @@
 
 (def split
   (juxt split-training split-validation))
+
+(defn build-vocabulary
+  [dataset]
+  (with-open [bpe-file (io/reader (get-dataset-path dataset "bpe.txt"))]
+    (->> bpe-file
+         line-seq
+         (reduce (fn [reduction sentence]
+                   (reduce (fn [reduction* word]
+                             (conj reduction* word))
+                           reduction
+                           (str/split sentence #" ")))
+                 #{})
+         (map-indexed (fn [index word]
+                        {index word}))
+         (apply merge)
+         ((juxt (comp (partial helpers/spit-parents
+                               (get-dataset-path dataset "word.json"))
+                      generate-string)
+                (comp (partial helpers/spit-parents
+                               (get-dataset-path dataset "index.json"))
+                      generate-string
+                      set/map-invert))))))
