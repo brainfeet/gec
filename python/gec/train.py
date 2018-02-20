@@ -49,9 +49,9 @@ class Encoder(nn.Module):
                           bidirectional=True)
 
     def forward(self, m):
-        embedding, states = self.gru(m["input"], m["states"])
+        embedding, state = self.gru(m["input"], m["state"])
         return {"embedding": embedding,
-                "states": states}
+                "state": state}
 
 
 def get_cuda(x):
