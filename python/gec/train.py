@@ -131,8 +131,8 @@ def if_(test, then, else_):
 
 
 def get_training_variables_(m):
-    # TODO transform word and bpe
-    return map(compose(if_(m["k"] == "bag",
+    # TODO transform word and bag
+    return map(compose(if_(m["k"] == "bpe",
                            compose(autograd.Variable, torch.FloatTensor, tuple),
                            identity),
                        partial(map, partial(flip(get), m["k"]))),
