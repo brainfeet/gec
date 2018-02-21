@@ -137,7 +137,10 @@ def get_training_variables_(m):
                                    torch.FloatTensor,
                                    tuple),
                            identity),
-                       partial(map, partial(flip(get), m["k"]))),
+                       partial(map, partial(flip(get), m["k"])),
+                       lambda x: sorted(x, key=compose(len, partial(flip(get),
+                                                                    "bag")),
+                                        reverse=True)),
                m["raw_batches"])
 
 
