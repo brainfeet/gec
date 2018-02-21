@@ -53,8 +53,10 @@ class Encoder(nn.Module):
 
     def forward(self, m):
         # TODO pack
+        # TODO pad output to make the length equal to max_length
         encoder_output, hidden = self.gru(m["encoder_input"], m["hidden"])
         return {"encoder_output": encoder_output,
+                # TODO move transpose outside
                 "hidden": hidden.transpose(0, 1)}
 
 
