@@ -181,6 +181,7 @@ def make_get_training_variables(m):
         return get_training_variables_(
             merge(m, {"k": k,
                       "raw_batches":
+                      # TODO filter by max_length
                           mapcat(compose(partial(partition, m["batch_size"]),
                                          get_raw_data),
                                  cycle(glob.glob(get_glob(m))))}))
