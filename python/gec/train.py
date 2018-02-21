@@ -54,11 +54,9 @@ class Encoder(nn.Module):
 
     def forward(self, m):
         # TODO move pack outside
-        packed_encoder_embedded, hidden = self.gru(
-            m["packed_input"],
-            m["hidden"])
-        return {"encoder_embedded": rnn.pad_packed_sequence(
-            packed_encoder_embedded, batch_first=True)[0],
+        packed_output, hidden = self.gru(m["packed_input"],
+                                         m["hidden"])
+        return {"packed_output": packed_output,
                 "hidden": hidden}
 
 
@@ -238,20 +236,25 @@ def make_run_batch(m):
     def run_batch(reduction, element):
         m["encoder"].zero_grad()
         m["decoder"].zero_grad()
-        encoder_output = m["encoder"]({"packed_input": rnn.pack_padded_sequence(
+        padded_output = m["encoder"]({"packed_input": rnn.pack_padded_sequence(
             first(element), second(element), batch_first=True),
             "hidden": get_hidden(m)})
+        print(padded_output)
         # TODO log
         # TODO validate
         # TODO backprop
         return tuple(map(compose(m["decoder"],
                                  partial(set_in,
                                          merge(m,
-                                               encoder_output,
-                                               {
-                                                   "encoder_embedded": pad_variable(
-                                                       merge(encoder_output,
-                                                             get_hyperparameter()))}),
+                                               {"hidden": padded_output["hidden"],
+                                                "encoder_embedded": pad_variable(
+                                                    set_in(
+                                                        get_hyperparameter(),
+                                                        ["encoder_embedded"],
+                                                        first(
+                                                            rnn.pad_packed_sequence(
+                                                                padded_output,
+                                                                batch_first=True))))}),
                                          ["input_bpe"])),
                          last(element)))
     return run_batch
