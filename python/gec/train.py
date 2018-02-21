@@ -235,6 +235,14 @@ def make_run_batch(m):
         m["decoder"].zero_grad()
         encoder_output = m["encoder"]({"bag": first(element),
                                        "hidden": get_hidden(m)})
-        return encoder_output
+        return tuple(map(compose(m["decoder"],
+                                 partial(set_in,
+                                         merge(m,
+                                               encoder_output,
+                                               {
+                                                   "encoder_embedded": pad_variable(
+                                                       merge(encoder_output,
+                                                             get_hyperparameter()))}),
+                                         ["input_bpe"])),
+                         last(element)))
     return run_batch
-
