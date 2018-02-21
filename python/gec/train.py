@@ -58,7 +58,6 @@ class Encoder(nn.Module):
 class Decoder(nn.Module):
     def __init__(self, m):
         super().__init__()
-
         self.embedding = nn.Embedding(m["vocabulary_size"], m["hidden_size"])
         self.attention = nn.Linear(m["hidden_size"] * 2, m["max_length"])
         self.attention_combine = nn.Linear(m["hidden_size"] * 2,
