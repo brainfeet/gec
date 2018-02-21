@@ -130,6 +130,11 @@ def if_(test, then, else_):
     return else_
 
 
+def sort_by_bag(batches):
+    return sorted(batches, key=compose(len, partial(flip(get), "bag")),
+                  reverse=True)
+
+
 def get_training_variables_(m):
     # TODO transform word and bag
     return map(compose(if_(m["k"] == "bpe",
@@ -138,9 +143,7 @@ def get_training_variables_(m):
                                    tuple),
                            identity),
                        partial(map, partial(flip(get), m["k"])),
-                       lambda x: sorted(x, key=compose(len, partial(flip(get),
-                                                                    "bag")),
-                                        reverse=True)),
+                       sort_by_bag),
                m["raw_batches"])
 
 
