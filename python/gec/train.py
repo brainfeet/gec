@@ -235,6 +235,7 @@ def make_run_batch(m):
         m["encoder"].zero_grad()
         m["decoder"].zero_grad()
         encoder_output = m["encoder"]({"bag": first(element),
+                                       "length": second(element),
                                        "hidden": get_hidden(m)})
         # TODO log
         # TODO validate
