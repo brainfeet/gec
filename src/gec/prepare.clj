@@ -176,8 +176,7 @@
 
 (def get-count-filename
   (comp (partial (aid/flip str) ".txt")
-        count
-        split-tokens))
+        count))
 
 (defn split-training
   [dataset n]
@@ -192,6 +191,7 @@
                     (s/setval :bpe bpe m))
                   (->> bpe-file
                        line-seq
+                       (drop n)
                        (map (comp (partial map index)
                                   split-tokens))))
              (map
@@ -200,7 +200,7 @@
                    (get-dataset-path dataset
                                      "split"
                                      "training"
-                                     (get-count-filename (:word m)))
+                                     (get-count-filename (:bpe m)))
                    (append-newline (generate-string m))
                    :append
                    true)))
