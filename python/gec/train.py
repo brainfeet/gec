@@ -56,8 +56,7 @@ class Encoder(nn.Module):
         # TODO pad output to make the length equal to max_length
         encoder_output, hidden = self.gru(m["encoder_input"], m["hidden"])
         return {"encoder_output": encoder_output,
-                # TODO move transpose outside
-                "hidden": hidden.transpose(0, 1)}
+                "hidden": hidden}
 
 
 class Decoder(nn.Module):
@@ -68,8 +67,18 @@ class Decoder(nn.Module):
         self.attention_combine = nn.Linear(m["hidden_size"] * 2,
                                            m["hidden_size"])
         self.dropout = nn.Dropout(m["dropout_probability"])
-        self.gru = nn.GRU(m["hidden_size"], m["hidden_size"])
+        self.gru = nn.GRU(m["hidden_size"], m["hidden_size"], batch_first=True)
         self.out = nn.Linear(m["hidden_size"], m["vocabulary_size"])
+
+    def forward(self, m):
+        embedded = self.dropout(self.embedding(m["decoder_input"])).unsqueeze(1)
+        output, hidden = self.gru(F.relu(
+            self.attention_combine(torch.cat((embedded, torch.bmm(F.softmax(
+                self.attention(
+                    torch.cat((embedded, m["hidden"].transpose(0, 1)), 2)),
+                dim=2), m["encoder_output"])), 2))), m["hidden"])
+        return {"decoder_output": F.log_softmax(self.out(output), dim=2),
+                "hidden": hidden}
 
 
 def get_cuda(x):
