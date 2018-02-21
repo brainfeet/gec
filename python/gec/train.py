@@ -85,7 +85,9 @@ num_layers = 1
 
 def get_hidden(m):
     return autograd.Variable(init.kaiming_normal(
-        get_cuda(torch.zeros(get_bidirectional_size(1),
+        get_cuda(torch.zeros(1,
+                             # TODO uncomment
+                             # get_bidirectional_size(1),
                              m["batch_size"],
                              m["hidden_size"]))))
 
