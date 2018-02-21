@@ -155,21 +155,24 @@
 
 (defn split-validation
   [dataset n]
-  (with-open [random-file (io/reader (get-dataset-path dataset "random.txt"))]
-    (with-open [bpe-file (io/reader (get-dataset-path dataset "bpe.txt"))]
-      (->> random-file
-           line-seq
-           (take n)
-           (map get-word-bag)
-           (map (comp generate-string
-                      (fn [bpe m]
-                        (s/setval :bpe bpe m)))
-                (->> bpe-file
-                     line-seq))
-           (str/join "\n")
-           (helpers/spit-parents (get-dataset-path dataset
-                                                   "split"
-                                                   "validation.txt"))))))
+  (let [index (parse-string (slurp (get-dataset-path dataset "index.json")))]
+    (with-open [random-file (io/reader (get-dataset-path dataset "random.txt"))]
+      (with-open [bpe-file (io/reader (get-dataset-path dataset "bpe.txt"))]
+        (->> random-file
+             line-seq
+             (take n)
+             (map get-word-bag)
+             (map (comp generate-string
+                        (fn [bpe m]
+                          (s/setval :bpe bpe m)))
+                  (->> bpe-file
+                       line-seq
+                       (map (comp (partial map index)
+                                  split-tokens))))
+             (str/join "\n")
+             (helpers/spit-parents (get-dataset-path dataset
+                                                     "split"
+                                                     "validation.txt")))))))
 
 (def get-count-filename
   (comp (partial (aid/flip str) ".txt")
