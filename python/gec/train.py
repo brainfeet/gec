@@ -50,6 +50,7 @@ class Encoder(nn.Module):
                           bidirectional=True)
 
     def forward(self, m):
+        # TODO pack
         encoder_output, hidden = self.gru(m["encoder_input"], m["hidden"])
         return {"encoder_output": encoder_output,
                 "hidden": hidden}
