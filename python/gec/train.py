@@ -53,7 +53,6 @@ class Encoder(nn.Module):
 
     def forward(self, m):
         # TODO pack
-        # TODO pad output to make the length equal to max_length
         encoder_embedded, hidden = self.gru(m["bag"], m["hidden"])
         return {"encoder_embedded": encoder_embedded,
                 "hidden": hidden}
