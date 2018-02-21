@@ -53,7 +53,6 @@ class Encoder(nn.Module):
                           )
 
     def forward(self, m):
-        # TODO move pack outside
         packed_output, hidden = self.gru(m["packed_input"],
                                          m["hidden"])
         return {"packed_output": packed_output,
