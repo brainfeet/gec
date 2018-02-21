@@ -143,9 +143,10 @@ def pad_zeros(coll):
 
 def get_training_variables_(m):
     # TODO transform word and bag
-    return map(compose(if_(m["k"] == "bpe",
+    return map(compose(if_(m["k"] == "bag",
                            compose(autograd.Variable,
                                    torch.FloatTensor,
+                                   pad_zeros,
                                    tuple),
                            identity),
                        partial(map, partial(flip(get), m["k"])),
