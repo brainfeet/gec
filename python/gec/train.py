@@ -235,6 +235,9 @@ def make_run_batch(m):
         m["decoder"].zero_grad()
         encoder_output = m["encoder"]({"bag": first(element),
                                        "hidden": get_hidden(m)})
+        # TODO log
+        # TODO validate
+        # TODO backprop
         return tuple(map(compose(m["decoder"],
                                  partial(set_in,
                                          merge(m,
