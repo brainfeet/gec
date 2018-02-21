@@ -54,8 +54,8 @@ class Encoder(nn.Module):
     def forward(self, m):
         # TODO pack
         # TODO pad output to make the length equal to max_length
-        encoder_output, hidden = self.gru(m["encoder_input"], m["hidden"])
-        return {"encoder_output": encoder_output,
+        encoder_embedded, hidden = self.gru(m["bag"], m["hidden"])
+        return {"encoder_embedded": encoder_embedded,
                 "hidden": hidden}
 
 
@@ -71,13 +71,13 @@ class Decoder(nn.Module):
         self.out = nn.Linear(m["hidden_size"], m["vocabulary_size"])
 
     def forward(self, m):
-        embedded = self.dropout(self.embedding(m["decoder_input"])).unsqueeze(1)
+        embedded = self.dropout(self.embedding(m["input_bpe"])).unsqueeze(1)
         output, hidden = self.gru(F.relu(
             self.attention_combine(torch.cat((embedded, torch.bmm(F.softmax(
                 self.attention(
                     torch.cat((embedded, m["hidden"].transpose(0, 1)), 2)),
-                dim=2), m["encoder_output"])), 2))), m["hidden"])
-        return {"decoder_output": F.log_softmax(self.out(output), dim=2),
+                dim=2), m["encoder_embedded"])), 2))), m["hidden"])
+        return {"decoder_bpe": F.log_softmax(self.out(output), dim=2),
                 "hidden": hidden}
 
 
@@ -210,10 +210,10 @@ get_vocabulary_size = compose(len,
 
 
 def pad_variable(m):
-    return torch.cat([m["encoder_output"],
+    return torch.cat([m["encoder_embedded"],
                       autograd.Variable(
-                          torch.zeros(m["encoder_output"].size()[0],
+                          torch.zeros(m["encoder_embedded"].size()[0],
                                       m["max_length"] -
-                                      m["encoder_output"].size()[1],
-                                      m["encoder_output"].size()[2]))],
+                                      m["encoder_embedded"].size()[1],
+                                      m["encoder_embedded"].size()[2]))],
                      dim=1)
