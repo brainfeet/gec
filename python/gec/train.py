@@ -17,6 +17,7 @@ import torch.cuda as cuda
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.nn.init as init
+import torch.nn.utils.rnn as rnn
 import torch.optim as optim
 import torchtext.vocab as vocab
 import sys
@@ -52,9 +53,12 @@ class Encoder(nn.Module):
                           )
 
     def forward(self, m):
-        # TODO pack
-        encoder_embedded, hidden = self.gru(m["bag"], m["hidden"])
-        return {"encoder_embedded": encoder_embedded,
+        # TODO move pack outside
+        packed_encoder_embedded, hidden = self.gru(
+            rnn.pack_padded_sequence(m["bag"], m["length"], batch_first=True),
+            m["hidden"])
+        return {"encoder_embedded": rnn.pad_packed_sequence(
+            packed_encoder_embedded, batch_first=True)[0],
                 "hidden": hidden}
 
 
