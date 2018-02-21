@@ -194,6 +194,7 @@
          (map-indexed (fn [index word]
                         {index word}))
          (apply merge)
+         ;TODO don't spit index.json
          ((juxt (comp (partial helpers/spit-parents
                                (get-dataset-path dataset "word.json"))
                       generate-string)
