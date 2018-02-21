@@ -155,3 +155,14 @@ def get_batches(m):
     return apply(partial(map, vector),
                  map(make_get_training_variables(m),
                      ["bag", "word", "bpe"]))
+
+
+def get_index_path(m):
+    return path.join(resources_path,
+                     "dataset",
+                     m["dataset"],
+                     "index.json")
+
+
+def get_vocabulary_size(m):
+    return len(json.loads(slurp(get_index_path(m))))
