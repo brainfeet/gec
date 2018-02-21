@@ -164,5 +164,9 @@ def get_index_path(m):
                      "index.json")
 
 
-def get_vocabulary_size(m):
-    return len(json.loads(slurp(get_index_path(m))))
+get_index_dictionary = compose(json.loads,
+                               slurp,
+                               get_index_path)
+
+get_vocabulary_size = compose(len,
+                              get_index_dictionary)
