@@ -135,6 +135,12 @@ def sort_by_bag(batches):
                   reverse=True)
 
 
+def pad_zeros(coll):
+    return tuple(map(lambda sentence: tuple(concat(sentence, tuple(repeat(
+        tuple(repeat(0, len(first(first(coll))))),
+        len(first(coll)) - len(sentence))))), coll))
+
+
 def get_training_variables_(m):
     # TODO transform word and bag
     return map(compose(if_(m["k"] == "bpe",
