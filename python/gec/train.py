@@ -151,7 +151,7 @@ def sort_by_bag(batches):
                   reverse=True)
 
 
-def pad_zeros(coll):
+def pad_tuple(coll):
     return tuple(map(lambda sentence: tuple(concat(sentence, tuple(repeat(
         tuple(repeat(0, len(first(first(coll))))),
         len(first(coll)) - len(sentence))))), coll))
@@ -168,7 +168,7 @@ def get_training_variables_(m):
                        if_(m["k"] == "bag",
                            compose(autograd.Variable,
                                    torch.FloatTensor,
-                                   pad_zeros),
+                                   pad_tuple),
                            identity),
                        tuple,
                        partial(map, partial(flip(get), m["k"])),
@@ -207,3 +207,13 @@ get_index_map = compose(json.loads,
 
 get_vocabulary_size = compose(len,
                               get_index_map)
+
+
+def pad_variable(m):
+    return torch.cat([m["encoder_output"],
+                      autograd.Variable(
+                          torch.zeros(m["encoder_output"].size()[0],
+                                      m["max_length"] -
+                                      m["encoder_output"].size()[1],
+                                      m["encoder_output"].size()[2]))],
+                     dim=1)
