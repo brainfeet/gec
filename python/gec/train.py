@@ -175,15 +175,26 @@ def get_training_variables_(m):
                m["raw_batches"])
 
 
+def le(x, y):
+    return x >= y
+
+
 def make_get_training_variables(m):
     def get_training_variables(k):
         return get_training_variables_(
-            merge(m, {"k": k,
-                      "raw_batches":
-                      # TODO filter by max_length
-                          mapcat(compose(partial(partition, m["batch_size"]),
-                                         get_raw_data),
-                                 cycle(glob.glob(get_glob(m))))}))
+            merge(m,
+                  {"k": k,
+                   "raw_batches":
+                       mapcat(partial(partition, m["batch_size"]),
+                              map(compose(partial(filter,
+                                                  compose(partial(le, m[
+                                                      "max_length"]),
+                                                          len,
+                                                          partial(
+                                                              flip(get),
+                                                              "bpe"))),
+                                          get_raw_data),
+                                  cycle(glob.glob(get_glob(m)))))}))
     return get_training_variables
 
 
