@@ -1,5 +1,7 @@
 {
   "batch_size": 2,
   "dataset": "sample",
+  "dropout_probability": 0.1,
+  "max_length": 20,
   "hidden_size": 3
 }
