@@ -227,3 +227,14 @@ def pad_variable(m):
                                       m["encoder_embedded"].size()[1],
                                       m["encoder_embedded"].size()[2]))],
                      dim=1)
+
+
+def make_run_batch(m):
+    def run_batch(reduction, element):
+        m["encoder"].zero_grad()
+        m["decoder"].zero_grad()
+        encoder_output = m["encoder"]({"bag": first(element),
+                                       "hidden": get_hidden(m)})
+        return encoder_output
+    return run_batch
+
