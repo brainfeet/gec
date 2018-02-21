@@ -156,19 +156,20 @@ def pad_tuple(coll):
         len(first(coll)) - len(sentence))))), coll))
 
 
+transformation = {"bpe": compose(tuple,
+                                 autograd.Variable,
+                                 lambda tensor: torch.transpose(tensor, 0, 1),
+                                 torch.LongTensor),
+                  "word": identity,
+                  "length": identity,
+                  "bag": compose(autograd.Variable,
+                                 torch.FloatTensor,
+                                 pad_tuple)}
+
+
 def get_training_variables_(m):
     # TODO transform word and bag
-    return map(compose(if_(m["k"] == "bpe",
-                           compose(tuple,
-                                   autograd.Variable,
-                                   lambda tensor: torch.transpose(tensor, 0, 1),
-                                   torch.LongTensor),
-                           identity),
-                       if_(m["k"] == "bag",
-                           compose(autograd.Variable,
-                                   torch.FloatTensor,
-                                   pad_tuple),
-                           identity),
+    return map(compose(transformation[m["k"]],
                        tuple,
                        partial(map, partial(flip(get), m["k"])),
                        sort_by_bag),
@@ -201,7 +202,7 @@ def make_get_training_variables(m):
 def get_batches(m):
     return apply(partial(map, vector),
                  map(make_get_training_variables(m),
-                     ["bag", "word", "bpe"]))
+                     ["bag", "length", "word", "bpe"]))
 
 
 def get_index_path(m):
