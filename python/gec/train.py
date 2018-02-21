@@ -55,7 +55,7 @@ class Encoder(nn.Module):
     def forward(self, m):
         # TODO move pack outside
         packed_encoder_embedded, hidden = self.gru(
-            rnn.pack_padded_sequence(m["bag"], m["length"], batch_first=True),
+            m["packed_input"],
             m["hidden"])
         return {"encoder_embedded": rnn.pad_packed_sequence(
             packed_encoder_embedded, batch_first=True)[0],
@@ -238,9 +238,9 @@ def make_run_batch(m):
     def run_batch(reduction, element):
         m["encoder"].zero_grad()
         m["decoder"].zero_grad()
-        encoder_output = m["encoder"]({"bag": first(element),
-                                       "length": second(element),
-                                       "hidden": get_hidden(m)})
+        encoder_output = m["encoder"]({"packed_input": rnn.pack_padded_sequence(
+            first(element), second(element), batch_first=True),
+            "hidden": get_hidden(m)})
         # TODO log
         # TODO validate
         # TODO backprop
