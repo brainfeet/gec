@@ -47,13 +47,15 @@ class Encoder(nn.Module):
     def __init__(self, m):
         super().__init__()
         self.gru = nn.GRU(bag_size, m["hidden_size"], batch_first=True,
-                          bidirectional=True)
+                          # TODO uncomment
+                          # bidirectional=True
+                          )
 
     def forward(self, m):
         # TODO pack
         encoder_output, hidden = self.gru(m["encoder_input"], m["hidden"])
         return {"encoder_output": encoder_output,
-                "hidden": hidden}
+                "hidden": hidden.transpose(0, 1)}
 
 
 class Decoder(nn.Module):
