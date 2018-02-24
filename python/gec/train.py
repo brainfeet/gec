@@ -77,7 +77,7 @@ class Decoder(nn.Module):
                 self.attention(
                     torch.cat((embedded, m["hidden"].transpose(0, 1)), 2)),
                 dim=2), m["encoder_embedded"])), 2))), m["hidden"])
-        return {"decoder_bpe": F.log_softmax(self.out(output), dim=2),
+        return {"decoder_bpe": self.out(output),
                 "hidden": hidden}
 
 
