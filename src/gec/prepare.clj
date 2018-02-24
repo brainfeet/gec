@@ -113,7 +113,8 @@
                            (str/split sentence #" ")))
                  #{})
          (map-indexed (fn [index word]
-                        {index word}))
+                        ;consider EOS and SOS tokens
+                        {(+ 2 index) word}))
          (apply merge)
          ;TODO don't spit index.json
          ((juxt (comp (partial helpers/spit-parents
