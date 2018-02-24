@@ -251,6 +251,8 @@ def make_run_batch(m):
         # TODO validate
         # TODO backprop
         return reduce(reduce_decoder,
+                      # TODO prepend SOS
+                      # TODO include targets
                       last(element),
                       (merge(m,
                              {"hidden": padded_output["hidden"],
