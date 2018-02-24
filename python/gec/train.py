@@ -231,6 +231,9 @@ def pad_variable(m):
                      dim=1)
 
 
+get_loss = nn.CrossEntropyLoss()
+
+
 def make_run_batch(m):
     def run_batch(reduction, element):
         m["encoder"].zero_grad()
@@ -242,18 +245,18 @@ def make_run_batch(m):
         # TODO log
         # TODO validate
         # TODO backprop
-        return tuple(map(compose(m["decoder"],
-                                 partial(set_in,
-                                         merge(m,
-                                               {"hidden": padded_output["hidden"],
-                                                "encoder_embedded": pad_variable(
-                                                    set_in(
-                                                        get_hyperparameter(),
-                                                        ["encoder_embedded"],
-                                                        first(
-                                                            rnn.pad_packed_sequence(
-                                                                padded_output["packed_output"],
-                                                                batch_first=True))))}),
-                                         ["input_bpe"])),
-                         last(element)))
+        return tuple(
+            map(compose(
+                m["decoder"],
+                partial(set_in,
+                        merge(m,
+                              {"hidden": padded_output["hidden"],
+                               "encoder_embedded": pad_variable(
+                                   set_in(get_hyperparameter(),
+                                          ["encoder_embedded"],
+                                          first(rnn.pad_packed_sequence(
+                                              padded_output["packed_output"],
+                                              batch_first=True))))}),
+                        ["input_bpe"])),
+                last(element)))
     return run_batch
