@@ -201,6 +201,7 @@ def make_get_training_variables(m):
 
 
 def get_batches(m):
+    # TODO parameterize step count
     return apply(partial(map, vector),
                  map(make_get_training_variables(m),
                      ["bag", "length", "word", "bpe"]))
@@ -276,6 +277,8 @@ def make_run_batch(m):
                                       batch_first=True)))),
                        "loss": autograd.Variable(
                            torch.FloatTensor([0]))})))["loss"].backward()
+        m["encoder_optimizer"].step()
+        m["decoder_optimizer"].step()
     return run_batch
 
 
