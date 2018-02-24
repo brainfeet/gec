@@ -245,6 +245,7 @@ def make_run_batch(m):
         # TODO log
         # TODO validate
         # TODO backprop
+        # TODO use previous hidden
         return tuple(
             map(compose(
                 m["decoder"],
