@@ -296,3 +296,8 @@ def load():
                   "encoder_optimizer": get_optimizer(encoder.parameters()),
                   "decoder": decoder,
                   "decoder_optimizer": get_optimizer(decoder.parameters())})
+
+
+def train():
+    loaded = load()
+    reduce(make_run_batch(loaded), take(2, get_batches(loaded)))
