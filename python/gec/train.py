@@ -260,20 +260,19 @@ def make_run_batch(m):
     def run_batch(reduction, element):
         m["encoder"].zero_grad()
         m["decoder"].zero_grad()
-        padded_output = m["encoder"]({"packed_input": rnn.pack_padded_sequence(
+        encoder_output = m["encoder"]({"packed_input": rnn.pack_padded_sequence(
             first(element), second(element), batch_first=True),
             "hidden": get_hidden(m)})
         # TODO log
         reduce(decode,
                map(vector, slide(last(element)), last(element)),
                (merge(m,
-                      {"hidden": padded_output["hidden"],
+                      {"hidden": encoder_output["hidden"],
                        "encoder_embedded": pad_variable(
                            set_in(get_hyperparameter(),
                                   ["encoder_embedded"],
                                   first(rnn.pad_packed_sequence(
-                                      padded_output[
-                                          "packed_output"],
+                                      encoder_output["packed_output"],
                                       batch_first=True)))),
                        "loss": autograd.Variable(
                            torch.FloatTensor([0]))})))["loss"].backward()
