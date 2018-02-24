@@ -240,11 +240,11 @@ def reduce_decoder(reduction, element):
                                             {"input_bpe": element})))
 
 
-def prepend_sos(coll):
+def slide(coll):
     return tuple(concat(
         [autograd.Variable(
             torch.LongTensor(tuple(repeat(0, first(coll).size(0)))))],
-        coll))
+        butlast(coll)))
 
 
 def make_run_batch(m):
@@ -257,11 +257,9 @@ def make_run_batch(m):
         # TODO log
         # TODO validate
         # TODO backprop
-        # print(last(element))
-        print(prepend_sos(last(element)))
         return reduce(reduce_decoder,
                       # TODO include targets
-                      prepend_sos(last(element)),
+                      slide(last(element)),
                       (merge(m,
                              {"hidden": padded_output["hidden"],
                               "encoder_embedded": pad_variable(
