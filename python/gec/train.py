@@ -234,6 +234,15 @@ def pad_variable(m):
 get_loss = nn.CrossEntropyLoss()
 
 
+def make_reduce_decoder(m):
+    def reduce_decoder(reduction, element):
+        return merge(reduction,
+                     m["decoder"](merge(m,
+                                        reduction,
+                                        {"input_bpe": element})))
+    return reduce_decoder
+
+
 def make_run_batch(m):
     def run_batch(reduction, element):
         m["encoder"].zero_grad()
@@ -241,23 +250,19 @@ def make_run_batch(m):
         padded_output = m["encoder"]({"packed_input": rnn.pack_padded_sequence(
             first(element), second(element), batch_first=True),
             "hidden": get_hidden(m)})
-        print(padded_output)
         # TODO log
         # TODO validate
         # TODO backprop
-        # TODO use previous hidden
-        return tuple(
-            map(compose(
-                m["decoder"],
-                partial(set_in,
-                        merge(m,
-                              {"hidden": padded_output["hidden"],
-                               "encoder_embedded": pad_variable(
-                                   set_in(get_hyperparameter(),
-                                          ["encoder_embedded"],
-                                          first(rnn.pad_packed_sequence(
-                                              padded_output["packed_output"],
-                                              batch_first=True))))}),
-                        ["input_bpe"])),
-                last(element)))
+        return reduce(make_reduce_decoder
+                      (merge(m,
+                             {"hidden": padded_output["hidden"],
+                              "encoder_embedded": pad_variable(
+                                  set_in(get_hyperparameter(),
+                                         ["encoder_embedded"],
+                                         first(rnn.pad_packed_sequence(
+                                             padded_output[
+                                                 "packed_output"],
+                                             batch_first=True))))})),
+                      last(element),
+                      {})
     return run_batch
