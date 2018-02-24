@@ -241,12 +241,12 @@ def contains(coll, key):
 def reduce_decoder(reduction, element):
     decoder_output = reduction["decoder"](
         merge(reduction, {"input_bpe": first(element)}))
-    loss = get_loss(decoder_output["decoder_bpe"].squeeze(1), second(element))
     # TODO use Clojure's merge_with
     return set_in(merge(reduction, decoder_output),
                   ["loss"],
-                  reduction["loss"] + loss if contains(reduction,
-                                                       "loss") else loss)
+                  reduction["loss"] + get_loss(
+                      decoder_output["decoder_bpe"].squeeze(1),
+                      second(element)))
 
 
 def slide(coll):
@@ -276,5 +276,7 @@ def make_run_batch(m):
                                          first(rnn.pad_packed_sequence(
                                              padded_output[
                                                  "packed_output"],
-                                             batch_first=True))))})))
+                                             batch_first=True)))),
+                              "loss": autograd.Variable(
+                                  torch.FloatTensor([0]))})))
     return run_batch
