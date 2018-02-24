@@ -252,7 +252,7 @@ def make_run_batch(m):
                                                         ["encoder_embedded"],
                                                         first(
                                                             rnn.pad_packed_sequence(
-                                                                padded_output,
+                                                                padded_output["packed_output"],
                                                                 batch_first=True))))}),
                                          ["input_bpe"])),
                          last(element)))
