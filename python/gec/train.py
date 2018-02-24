@@ -238,7 +238,7 @@ def contains(coll, key):
     return key in coll
 
 
-def reduce_decoder(reduction, element):
+def decode(reduction, element):
     decoder_output = reduction["decoder"](
         merge(reduction, {"input_bpe": first(element)}))
     # TODO use Clojure's merge_with
@@ -264,7 +264,7 @@ def make_run_batch(m):
             first(element), second(element), batch_first=True),
             "hidden": get_hidden(m)})
         # TODO log
-        reduce(reduce_decoder,
+        reduce(decode,
                map(vector, slide(last(element)), last(element)),
                (merge(m,
                       {"hidden": padded_output["hidden"],
