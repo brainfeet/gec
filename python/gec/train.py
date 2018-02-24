@@ -234,12 +234,19 @@ def pad_variable(m):
 get_loss = nn.CrossEntropyLoss()
 
 
+def contains(coll, key):
+    return key in coll
+
+
 def reduce_decoder(reduction, element):
     decoder_output = reduction["decoder"](
         merge(reduction, {"input_bpe": first(element)}))
-    # TODO add loss
-    get_loss(decoder_output["decoder_bpe"].squeeze(1), second(element))
-    return merge(reduction, decoder_output)
+    loss = get_loss(decoder_output["decoder_bpe"].squeeze(1), second(element))
+    # TODO use Clojure's merge_with
+    return set_in(merge(reduction, decoder_output),
+                  ["loss"],
+                  reduction["loss"] + loss if contains(reduction,
+                                                       "loss") else loss)
 
 
 def slide(coll):
