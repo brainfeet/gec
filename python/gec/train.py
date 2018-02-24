@@ -237,7 +237,7 @@ get_loss = nn.CrossEntropyLoss()
 def reduce_decoder(reduction, element):
     return merge(reduction,
                  reduction["decoder"](merge(reduction,
-                                            {"input_bpe": element})))
+                                            {"input_bpe": first(element)})))
 
 
 def slide(coll):
@@ -258,8 +258,7 @@ def make_run_batch(m):
         # TODO validate
         # TODO backprop
         return reduce(reduce_decoder,
-                      # TODO include targets
-                      slide(last(element)),
+                      map(vector, slide(last(element)), last(element)),
                       (merge(m,
                              {"hidden": padded_output["hidden"],
                               "encoder_embedded": pad_variable(
