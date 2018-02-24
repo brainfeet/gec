@@ -277,3 +277,22 @@ def make_run_batch(m):
                        "loss": autograd.Variable(
                            torch.FloatTensor([0]))})))["loss"].backward()
     return run_batch
+
+
+get_optimizer = compose(optim.Adam,
+                        partial(filter,
+                                partial(flip(getattr), "requires_grad")))
+
+
+def load():
+    encoder = get_cuda(Encoder(get_hyperparameter()), )
+    decoder = get_cuda(Decoder(set_in(get_hyperparameter(),
+                                      ["vocabulary_size"],
+                                      get_vocabulary_size(
+                                          get_hyperparameter()))))
+    # TODO merge checkpoint
+    return merge(get_hyperparameter(),
+                 {"encoder": encoder,
+                  "encoder_optimizer": get_optimizer(encoder.parameters()),
+                  "decoder": decoder,
+                  "decoder_optimizer": get_optimizer(decoder.parameters())})
