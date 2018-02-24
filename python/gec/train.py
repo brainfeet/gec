@@ -235,9 +235,11 @@ get_loss = nn.CrossEntropyLoss()
 
 
 def reduce_decoder(reduction, element):
-    return merge(reduction,
-                 reduction["decoder"](merge(reduction,
-                                            {"input_bpe": first(element)})))
+    decoder_output = reduction["decoder"](
+        merge(reduction, {"input_bpe": first(element)}))
+    # TODO add loss
+    get_loss(decoder_output["decoder_bpe"].squeeze(1), second(element))
+    return merge(reduction, decoder_output)
 
 
 def slide(coll):
