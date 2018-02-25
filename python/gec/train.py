@@ -262,11 +262,12 @@ def slide(coll):
         butlast(coll)))
 
 
-def decode_validation(reduction, bpe):
+def decode_validation(reduction, _):
     # TODO accumulate decoder BPE
-    # TODO don't teacher force
-    decoder_output = reduction["decoder"](merge(reduction, {"input_bpe": bpe}))
-    return merge(reduction, decoder_output)
+    decoder_output = reduction["decoder"](reduction)
+    return set_in(merge(reduction, decoder_output), ["input_bpe"],
+                  autograd.Variable(
+                      decoder_output["decoder_bpe"].data.topk(1)[1][0][0]))
 
 
 def make_run_validation(m):
@@ -281,7 +282,9 @@ def make_run_validation(m):
                               "encoder_embedded": pad_variable(
                                   set_in(get_hyperparameter(),
                                          ["encoder_embedded"],
-                                         encoder_output["packed_output"]))})))
+                                         encoder_output["packed_output"])),
+                              "input_bpe": autograd.Variable(
+                                  torch.LongTensor([0]))})))
     return run_validation
 
 
@@ -307,8 +310,8 @@ def make_run_batch(m):
         m["encoder_optimizer"].step()
         m["decoder_optimizer"].step()
         # TODO log
-        map(make_run_validation(m),
-            get_batches(set_in(m, ["split"], "validation")))
+        tuple(map(make_run_validation(m),
+                  get_batches(set_in(m, ["split"], "validation"))))
         return update_in(reduction, ["step_count"], inc)
     return run_batch
 
