@@ -280,6 +280,7 @@ def make_run_batch(m):
                            torch.FloatTensor([0]))})))["loss"].backward()
         m["encoder_optimizer"].step()
         m["decoder_optimizer"].step()
+        return update_in(reduction, ["step_count"], inc)
     return run_batch
 
 
