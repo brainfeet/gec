@@ -1,9 +1,11 @@
 name: gec
 channels:
+- anaconda
 - soumith
 - pytorch
 - defaults
 dependencies:
+- nltk=3.2.5=py36h7532b22_0
 - certifi=2016.2.28=py36_0
 - cffi=1.10.0=py36_0
 - cudatoolkit=8.0=3
