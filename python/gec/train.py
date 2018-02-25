@@ -99,7 +99,7 @@ def get_hidden(m):
         get_cuda(torch.zeros(1,
                              # TODO uncomment
                              # get_bidirectional_size(1),
-                             m["batch_size"],
+                             if_(m["split"] == "training", m["batch_size"], 1),
                              m["hidden_size"]))))
 
 
@@ -262,13 +262,35 @@ def slide(coll):
         butlast(coll)))
 
 
+def decode_validation(reduction, bpe):
+    # TODO accumulate decoder BPE
+    decoder_output = reduction["decoder"](merge(reduction, {"input_bpe": bpe}))
+    return merge(reduction, decoder_output)
+
+
+def make_run_validation(m):
+    def run_validation(element):
+        encoder_output = m["encoder"]({"packed_input": first(element),
+                                       "hidden": get_hidden(
+                                           set_in(m, ["split"], "validation"))})
+        return reduce(decode_validation,
+                      slide(last(element)),
+                      (merge(m,
+                             {"hidden": encoder_output["hidden"],
+                              "encoder_embedded": pad_variable(
+                                  set_in(get_hyperparameter(),
+                                         ["encoder_embedded"],
+                                         encoder_output["packed_output"]))})))
+    return run_validation
+
+
 def make_run_batch(m):
     def run_batch(reduction, element):
         m["encoder"].zero_grad()
         m["decoder"].zero_grad()
         encoder_output = m["encoder"]({"packed_input": rnn.pack_padded_sequence(
             first(element), second(element), batch_first=True),
-            "hidden": get_hidden(m)})
+            "hidden": get_hidden(set_in(m, ["split"], "training"))})
         reduce(decode,
                map(vector, slide(last(element)), last(element)),
                (merge(m,
@@ -284,6 +306,8 @@ def make_run_batch(m):
         m["encoder_optimizer"].step()
         m["decoder_optimizer"].step()
         # TODO log
+        map(make_run_validation(m),
+            get_batches(set_in(m, ["split"], "validation")))
         return update_in(reduction, ["step_count"], inc)
     return run_batch
 
