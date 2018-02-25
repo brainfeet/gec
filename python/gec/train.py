@@ -21,6 +21,7 @@ import torch.nn.utils.rnn as rnn
 import torch.optim as optim
 import torchtext.vocab as vocab
 import sys
+import nltk
 
 from gec.clojure import *
 
@@ -292,18 +293,18 @@ def make_run_validation(m):
         encoder_output = m["encoder"]({"packed_input": first(element),
                                        "hidden": get_hidden(
                                            set_in(m, ["split"], "validation"))})
-        # TODO calculate BLEU
-        nth(2, element)
-        return reduce(decode_validation,
-                      slide(last(element)),
-                      (merge(m,
-                             {"hidden": encoder_output["hidden"],
-                              "encoder_embedded": pad_variable(
-                                  set_in(get_hyperparameter(),
-                                         ["encoder_embedded"],
-                                         encoder_output["packed_output"])),
-                              "input_bpe": autograd.Variable(
-                                  torch.LongTensor([0]))})))["words"]
+        return nltk.translate.bleu_score.sentence_bleu(
+            [nth(2, element)],
+            reduce(decode_validation,
+                   slide(last(element)),
+                   (merge(m,
+                          {"hidden": encoder_output["hidden"],
+                           "encoder_embedded": pad_variable(
+                               set_in(get_hyperparameter(),
+                                      ["encoder_embedded"],
+                                      encoder_output["packed_output"])),
+                           "input_bpe": autograd.Variable(
+                               torch.LongTensor([0]))})))["words"])
     return run_validation
 
 
