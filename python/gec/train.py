@@ -304,4 +304,4 @@ def load():
 
 def train():
     loaded = load()
-    reduce(make_run_batch(loaded), get_batches(loaded))
+    reduce(make_run_batch(loaded), get_batches(loaded), loaded)
