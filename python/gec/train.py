@@ -108,7 +108,7 @@ def get_glob(m):
                      "dataset",
                      m["dataset"],
                      "split",
-                     "training",
+                     m["split"],
                      "*")
 
 
@@ -305,4 +305,6 @@ def load():
 
 def train():
     loaded = load()
-    reduce(make_run_batch(loaded), get_batches(loaded), loaded)
+    reduce(make_run_batch(loaded), get_batches(set_in(loaded,
+                                                      ["split"],
+                                                      "training")), loaded)
