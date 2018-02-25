@@ -115,7 +115,8 @@
          (map-indexed (fn [index word]
                         ;consider EOS and SOS tokens
                         {(+ 2 index) word}))
-         (apply merge)
+         (apply merge {0 "<SOS>"
+                       1 "<EOS>"})
          ;TODO don't spit index.json
          ((juxt (comp (partial helpers/spit-parents
                                (get-dataset-path dataset "word.json"))
