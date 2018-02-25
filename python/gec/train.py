@@ -288,6 +288,8 @@ def make_run_validation(m):
         encoder_output = m["encoder"]({"packed_input": first(element),
                                        "hidden": get_hidden(
                                            set_in(m, ["split"], "validation"))})
+        # TODO calculate BLEU
+        nth(2, element)
         return reduce(decode_validation,
                       slide(last(element)),
                       (merge(m,
