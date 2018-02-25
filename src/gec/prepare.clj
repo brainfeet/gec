@@ -158,58 +158,44 @@
                 split-tokens
                 (map bag))})
 
-(defn split-validation
-  [dataset n]
-  (let [index (parse-string (slurp (get-dataset-path dataset "index.json")))]
-    (with-open [random-file (io/reader (get-dataset-path dataset "random.txt"))]
-      (with-open [bpe-file (io/reader (get-dataset-path dataset "bpe.txt"))]
-        (->> random-file
-             line-seq
-             (take n)
-             (map structure-sentence)
-             (map (comp generate-string
-                        (fn [bpe m]
-                          (s/setval :bpe bpe m)))
-                  (->> bpe-file
-                       line-seq
-                       (map (comp (partial map index)
-                                  split-tokens))))
-             (str/join "\n")
-             (helpers/spit-parents (get-dataset-path dataset
-                                                     "split"
-                                                     "validation.txt")))))))
-
 (def get-count-filename
   (comp (partial (aid/flip str) ".txt")
         count))
 
-(defn split-training
-  [dataset n]
-  (let [index (parse-string (slurp (get-dataset-path dataset "index.json")))]
-    (with-open [random-file (io/reader (get-dataset-path dataset "random.txt"))]
-      (with-open [bpe-file (io/reader (get-dataset-path dataset "bpe.txt"))]
-        (->> random-file
-             line-seq
-             (drop n)
-             (map structure-sentence)
-             (map (fn [bpe m]
-                    (s/setval :bpe bpe m))
-                  (->> bpe-file
-                       line-seq
-                       (drop n)
-                       (map (comp (partial map index)
-                                  split-tokens))))
-             (map
-               (fn [m]
-                 (helpers/spit-parents
-                   (get-dataset-path dataset
-                                     "split"
-                                     "training"
-                                     (get-count-filename (:bpe m)))
-                   (append-newline (generate-string m))
-                   :append
-                   true)))
-             dorun)))))
+(defn make-split*
+  [training]
+  (fn [dataset n]
+    (let [index (parse-string (slurp (get-dataset-path dataset "index.json")))]
+      (with-open [random-file (io/reader (get-dataset-path dataset "random.txt"))]
+        (with-open [bpe-file (io/reader (get-dataset-path dataset "bpe.txt"))]
+          (->> random-file
+               line-seq
+               ((if training
+                  drop
+                  take) n)
+               (map structure-sentence)
+               (map (fn [bpe m]
+                      (s/setval :bpe bpe m))
+                    (->> bpe-file
+                         line-seq
+                         ((if training
+                            drop
+                            take) n)
+                         (map (comp (partial map index)
+                                    split-tokens))))
+               (map
+                 (fn [m]
+                   (helpers/spit-parents
+                     (get-dataset-path dataset
+                                       "split"
+                                       (if training
+                                         "training"
+                                         "validation")
+                                       (get-count-filename (:bpe m)))
+                     (append-newline (generate-string m))
+                     :append
+                     true)))
+               dorun))))))
 
 (def split
-  (juxt split-training split-validation))
+  (apply juxt (map make-split* [true false])))
