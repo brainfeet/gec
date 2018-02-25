@@ -201,10 +201,11 @@ def make_get_training_variables(m):
 
 
 def get_batches(m):
-    # TODO parameterize step count
-    return apply(partial(map, vector),
-                 map(make_get_training_variables(m),
-                     ["bag", "length", "word", "bpe"]))
+    return drop(m["step_count"],
+                take(m["total_step_count"],
+                     apply(partial(map, vector),
+                           map(make_get_training_variables(m),
+                               ["bag", "length", "word", "bpe"]))))
 
 
 def get_index_path(m):
@@ -303,4 +304,4 @@ def load():
 
 def train():
     loaded = load()
-    reduce(make_run_batch(loaded), take(2, get_batches(loaded)))
+    reduce(make_run_batch(loaded), get_batches(loaded))
