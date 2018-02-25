@@ -269,7 +269,6 @@ def make_run_batch(m):
         encoder_output = m["encoder"]({"packed_input": rnn.pack_padded_sequence(
             first(element), second(element), batch_first=True),
             "hidden": get_hidden(m)})
-        # TODO log
         reduce(decode,
                map(vector, slide(last(element)), last(element)),
                (merge(m,
@@ -284,6 +283,7 @@ def make_run_batch(m):
                            torch.FloatTensor([0]))})))["loss"].backward()
         m["encoder_optimizer"].step()
         m["decoder_optimizer"].step()
+        # TODO log
         return update_in(reduction, ["step_count"], inc)
     return run_batch
 
