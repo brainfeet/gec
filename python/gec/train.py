@@ -201,16 +201,15 @@ def make_get_variables(m):
                                                flip(get),
                                                "bpe"))),
                            get_raw_data),
-                           if_(m["split"] == "training",
-                               cycle,
-                               identity)(glob.glob(get_glob(m))))}))
+                           glob.glob(get_glob(m)))}))
     return get_variables
 
 
 def get_batches(m):
     return if_(m["split"] == "training",
                compose(partial(drop, m["step_count"]),
-                       partial(take, m["total_step_count"])),
+                       partial(take, m["total_step_count"]),
+                       cycle),
                identity)(apply(partial(map, vector),
                                map(make_get_variables(m),
                                    ["bag", "length", "word", "bpe"])))
