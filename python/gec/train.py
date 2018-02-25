@@ -296,7 +296,7 @@ def make_run_validation(m):
                                          ["encoder_embedded"],
                                          encoder_output["packed_output"])),
                               "input_bpe": autograd.Variable(
-                                  torch.LongTensor([0]))})))
+                                  torch.LongTensor([0]))})))["words"]
     return run_validation
 
 
