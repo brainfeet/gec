@@ -271,6 +271,7 @@ def make_append(suffix):
 
 def decode_validation(reduction, _):
     decoder_output = reduction["decoder"](reduction)
+    # TODO stop at an EOS token
     return update_in(set_in(merge(reduction, decoder_output), ["input_bpe"],
                             autograd.Variable(
                                 decoder_output["decoder_bpe"].data.topk(1)[1][
