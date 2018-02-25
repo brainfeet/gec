@@ -262,14 +262,24 @@ def slide(coll):
         butlast(coll)))
 
 
+def make_append(suffix):
+    def append(s):
+        return s + " " + suffix
+    return append
+
+
 def decode_validation(reduction, _):
     decoder_output = reduction["decoder"](reduction)
-    # TODO accumulate decoder BPE
-    get_word_map(reduction)[
-        str(decoder_output["decoder_bpe"].data.topk(1)[1][0][0][0])]
-    return set_in(merge(reduction, decoder_output), ["input_bpe"],
-                  autograd.Variable(
-                      decoder_output["decoder_bpe"].data.topk(1)[1][0][0]))
+    return update_in(set_in(merge(reduction, decoder_output), ["input_bpe"],
+                            autograd.Variable(
+                                decoder_output["decoder_bpe"].data.topk(1)[1][
+                                    0][0])),
+                     ["words"],
+                     make_append(get_word_map(reduction)[
+                                     str(decoder_output[
+                                             "decoder_bpe"].data.topk(1)[1][0][
+                                             0][0])]),
+                     "")
 
 
 def make_run_validation(m):
