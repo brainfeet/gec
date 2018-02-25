@@ -205,11 +205,12 @@ def make_get_variables(m):
 
 
 def get_batches(m):
-    return drop(m["step_count"],
-                take(m["total_step_count"],
-                     apply(partial(map, vector),
-                           map(make_get_variables(m),
-                               ["bag", "length", "word", "bpe"]))))
+    return if_(m["split"] == "training",
+               compose(partial(drop, m["step_count"]),
+                       partial(take, m["total_step_count"])),
+               identity)(apply(partial(map, vector),
+                               map(make_get_variables(m),
+                                   ["bag", "length", "word", "bpe"])))
 
 
 def get_word_path(m):
