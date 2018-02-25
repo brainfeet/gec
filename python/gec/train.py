@@ -264,8 +264,8 @@ def slide(coll):
 
 
 def make_append(suffix):
-    def append(s):
-        return s + " " + suffix
+    def append(coll):
+        return coll + [suffix]
     return append
 
 
@@ -280,7 +280,7 @@ def decode_validation(reduction, _):
                                      str(decoder_output[
                                              "decoder_bpe"].data.topk(1)[1][0][
                                              0][0])]),
-                     "")
+                     [])
 
 
 def make_run_validation(m):
