@@ -263,8 +263,10 @@ def slide(coll):
 
 
 def decode_validation(reduction, _):
-    # TODO accumulate decoder BPE
     decoder_output = reduction["decoder"](reduction)
+    # TODO accumulate decoder BPE
+    get_word_map(reduction)[
+        str(decoder_output["decoder_bpe"].data.topk(1)[1][0][0][0])]
     return set_in(merge(reduction, decoder_output), ["input_bpe"],
                   autograd.Variable(
                       decoder_output["decoder_bpe"].data.topk(1)[1][0][0]))
