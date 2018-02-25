@@ -212,19 +212,19 @@ def get_batches(m):
                                ["bag", "length", "word", "bpe"]))))
 
 
-def get_index_path(m):
+def get_word_path(m):
     return path.join(resources_path,
                      "dataset",
                      m["dataset"],
-                     "index.json")
+                     "word.json")
 
 
-get_index_map = compose(json.loads,
-                        slurp,
-                        get_index_path)
+get_word_map = compose(json.loads,
+                       slurp,
+                       get_word_path)
 
 get_vocabulary_size = compose(len,
-                              get_index_map)
+                              get_word_map)
 
 
 def pad_variable(m):
