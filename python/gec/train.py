@@ -271,17 +271,20 @@ def make_append(suffix):
 
 def decode_validation(reduction, _):
     decoder_output = reduction["decoder"](reduction)
-    # TODO stop at an EOS token
-    return update_in(set_in(merge(reduction, decoder_output), ["input_bpe"],
-                            autograd.Variable(
-                                decoder_output["decoder_bpe"].data.topk(1)[1][
-                                    0][0])),
-                     ["words"],
-                     make_append(get_word_map(reduction)[
-                                     str(decoder_output[
-                                             "decoder_bpe"].data.topk(1)[1][0][
-                                             0][0])]),
-                     [])
+    return if_(reduction["input_bpe"].data[0] == 1,
+               reduction,
+               update_in(set_in(merge(reduction, decoder_output), ["input_bpe"],
+                                autograd.Variable(
+                                    decoder_output["decoder_bpe"].data.topk(1)[
+                                        1][
+                                        0][0])),
+                         ["words"],
+                         make_append(get_word_map(reduction)[
+                                         str(decoder_output[
+                                                 "decoder_bpe"].data.topk(1)[1][
+                                                 0][
+                                                 0][0])]),
+                         []))
 
 
 def make_run_validation(m):
