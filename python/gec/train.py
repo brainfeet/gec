@@ -189,20 +189,21 @@ def make_get_variables(m):
             merge(m,
                   {"k": k,
                    "raw_batches":
-                       mapcat(partial(partition, if_(m["split"] == "training",
-                                                     m["batch_size"],
-                                                     1)),
-                              map(compose(partial(filter,
-                                                  compose(partial(le, m[
-                                                      "max_length"]),
-                                                          len,
-                                                          partial(
-                                                              flip(get),
-                                                              "bpe"))),
-                                          get_raw_data),
-                                  if_(m["split"] == "training",
-                                      cycle,
-                                      identity)(glob.glob(get_glob(m)))))}))
+                       mapcat(compose(
+                           partial(partition, if_(m["split"] == "training",
+                                                  m["batch_size"],
+                                                  1)),
+                           partial(filter,
+                                   compose(partial(le, m[
+                                       "max_length"]),
+                                           len,
+                                           partial(
+                                               flip(get),
+                                               "bpe"))),
+                           get_raw_data),
+                           if_(m["split"] == "training",
+                               cycle,
+                               identity)(glob.glob(get_glob(m))))}))
     return get_variables
 
 
