@@ -168,7 +168,7 @@ transformation = {"bpe": compose(tuple,
                                  pad_tuple)}
 
 
-def get_training_variables_(m):
+def get_variables_(m):
     # TODO transform word and bag
     return map(compose(transformation[m["k"]],
                        tuple,
@@ -181,13 +181,15 @@ def le(x, y):
     return x >= y
 
 
-def make_get_training_variables(m):
-    def get_training_variables(k):
-        return get_training_variables_(
+def make_get_variables(m):
+    def get_variables(k):
+        return get_variables_(
             merge(m,
                   {"k": k,
                    "raw_batches":
-                       mapcat(partial(partition, m["batch_size"]),
+                       mapcat(partial(partition, if_(m["split"] == "training",
+                                                     m["batch_size"],
+                                                     1)),
                               map(compose(partial(filter,
                                                   compose(partial(le, m[
                                                       "max_length"]),
@@ -196,15 +198,17 @@ def make_get_training_variables(m):
                                                               flip(get),
                                                               "bpe"))),
                                           get_raw_data),
-                                  cycle(glob.glob(get_glob(m)))))}))
-    return get_training_variables
+                                  if_(m["split"] == "training",
+                                      cycle,
+                                      identity)(glob.glob(get_glob(m)))))}))
+    return get_variables
 
 
 def get_batches(m):
     return drop(m["step_count"],
                 take(m["total_step_count"],
                      apply(partial(map, vector),
-                           map(make_get_training_variables(m),
+                           map(make_get_variables(m),
                                ["bag", "length", "word", "bpe"]))))
 
 
