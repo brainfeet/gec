@@ -264,6 +264,7 @@ def slide(coll):
 
 def decode_validation(reduction, bpe):
     # TODO accumulate decoder BPE
+    # TODO don't teacher force
     decoder_output = reduction["decoder"](merge(reduction, {"input_bpe": bpe}))
     return merge(reduction, decoder_output)
 
