@@ -133,7 +133,9 @@
 (defn bag
   [s]
   (reduce (fn [reduction c]
-            (s/transform (s/nthpath (int c)) inc reduction))
+            (if (< (int c) 128)
+              (s/transform (s/nthpath (int c)) inc reduction)
+              reduction))
           (repeat 128 0) s))
 
 (def split-tokens
