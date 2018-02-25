@@ -22,6 +22,7 @@ import torch.optim as optim
 import torchtext.vocab as vocab
 import sys
 import nltk
+import numpy
 
 from gec.clojure import *
 
@@ -330,8 +331,9 @@ def make_run_batch(m):
         m["encoder_optimizer"].step()
         m["decoder_optimizer"].step()
         # TODO log
-        tuple(map(make_run_validation(m),
-                  get_batches(set_in(m, ["split"], "validation"))))
+        numpy.mean(tuple(map(make_run_validation(m),
+                             get_batches(
+                                 set_in(m, ["split"], "validation")))))
         return update_in(reduction, ["step_count"], inc)
     return run_batch
 
