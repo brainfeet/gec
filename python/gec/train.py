@@ -280,7 +280,7 @@ def decode_validation(reduction, _):
                                     decoder_output["decoder_bpe"].data.topk(1)[
                                         1][
                                         0][0])),
-                         ["words"],
+                         ["decoder_bpes"],
                          make_append(get_word_map(reduction)[
                                          str(decoder_output[
                                                  "decoder_bpe"].data.topk(1)[1][
@@ -295,7 +295,7 @@ def make_run_validation(m):
                                        "hidden": get_hidden(
                                            set_in(m, ["split"], "validation"))})
         return nltk.translate.bleu_score.sentence_bleu(
-            [nth(2, element)],
+            last(element),
             reduce(decode_validation,
                    slide(last(element)),
                    (merge(m,
@@ -305,7 +305,7 @@ def make_run_validation(m):
                                       ["encoder_embedded"],
                                       encoder_output["packed_output"])),
                            "input_bpe": autograd.Variable(
-                               torch.LongTensor([0]))})))["words"])
+                               torch.LongTensor([0]))})))["decoder_bpes"])
     return run_validation
 
 
