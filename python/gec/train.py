@@ -331,9 +331,11 @@ def make_run_batch(m):
         m["encoder_optimizer"].step()
         m["decoder_optimizer"].step()
         # TODO log
-        numpy.mean(tuple(map(make_run_validation(m),
-                             get_batches(
-                                 set_in(m, ["split"], "validation")))))
+        if reduction["step_count"] % m["validation_frequency"] == 0:
+            print(numpy.mean(tuple(map(make_run_validation(m),
+                                       get_batches(
+                                           set_in(m, ["split"],
+                                                  "validation"))))))
         return update_in(reduction, ["step_count"], inc)
     return run_batch
 
