@@ -179,8 +179,8 @@ def get_variables_(m):
                m["raw_batches"])
 
 
-def le(x, y):
-    return x >= y
+def lt(x, y):
+    return x > y
 
 
 def make_get_variables(m):
@@ -194,7 +194,7 @@ def make_get_variables(m):
                                                   m["batch_size"],
                                                   1)),
                            partial(filter,
-                                   compose(partial(le, m[
+                                   compose(partial(lt, m[
                                        "max_length"]),
                                            len,
                                            partial(
