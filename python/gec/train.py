@@ -195,7 +195,7 @@ def make_get_variables(m):
             merge(m,
                   {"k": k,
                    "raw_batches":
-                       apply(concat, (map(compose(
+                       apply(concat, map(compose(
                            partial(partition, if_(m["split"] == "training",
                                                   m["batch_size"],
                                                   1)),
@@ -207,7 +207,7 @@ def make_get_variables(m):
                                                flip(get),
                                                "bpe"))),
                            get_raw_data),
-                           glob.glob(get_glob(m)))))}))
+                           glob.glob(get_glob(m))))}))
     return get_variables
 
 
