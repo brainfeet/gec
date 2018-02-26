@@ -10,6 +10,11 @@
                  [com.rpl/specter "1.0.5"]
                  [funcool/cats "2.1.0"]
                  [me.raynes/fs "1.4.6"]]
+  :plugins [[lein-auto "0.1.3"]
+            [lein-ancient "0.6.10"]]
   :main ^:skip-aot gec.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :auto {"rsync" {:paths        ["."]
+                  :file-pattern #"\.(clj|json|py)$"}}
+  :profiles {:uberjar {:aot :all}}
+  :aliases {"rsync" ["run" "rsync"]})

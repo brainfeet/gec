@@ -1,7 +1,12 @@
 (ns gec.core
-  (:gen-class))
+  (:gen-class)
+  (:require [gec.task.rsync :as rsync]))
 
 (defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
+  [command & more]
+  (apply (comp println
+               ({"rsync" rsync/rsync}
+                 command))
+         more)
+  ;rsync/rsync doesn't exit immediately
+  (shutdown-agents))
