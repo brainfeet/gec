@@ -183,13 +183,19 @@ def lt(x, y):
     return x > y
 
 
+def concat(*colls):
+    for coll in colls:
+        for element in coll:
+            yield element
+
+
 def make_get_variables(m):
     def get_variables(k):
         return get_variables_(
             merge(m,
                   {"k": k,
                    "raw_batches":
-                       mapcat(compose(
+                       apply(concat, (map(compose(
                            partial(partition, if_(m["split"] == "training",
                                                   m["batch_size"],
                                                   1)),
@@ -201,7 +207,7 @@ def make_get_variables(m):
                                                flip(get),
                                                "bpe"))),
                            get_raw_data),
-                           glob.glob(get_glob(m)))}))
+                           glob.glob(get_glob(m)))))}))
     return get_variables
 
 
