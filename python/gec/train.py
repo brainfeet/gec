@@ -26,7 +26,7 @@ import numpy
 
 from gec.clojure import *
 
-sys.argv = ["", "--timestamp", "20180227022136"]
+sys.argv = ["", "--timestamp", "20180227022710"]
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--timestamp")
