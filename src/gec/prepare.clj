@@ -85,7 +85,7 @@
   [dataset]
   (command/python "bin/learn_bpe.py"
                   "-s"
-                  "30000"
+                  "10000"
                   "<"
                   (get-dataset-path dataset "random.txt")
                   ">"
