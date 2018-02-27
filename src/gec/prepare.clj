@@ -175,6 +175,7 @@
                ((if training
                   drop
                   take) n)
+               ; TODO try pmap to improve performance
                (map structure-sentence)
                (map (fn [bpe m]
                       (s/setval :bpe bpe m))
