@@ -158,12 +158,14 @@ def pad_tuple(coll):
 
 
 transformation = {"bpe": compose(tuple,
+                                 get_cuda,
                                  autograd.Variable,
                                  lambda tensor: torch.transpose(tensor, 0, 1),
                                  torch.LongTensor),
                   "word": identity,
                   "length": identity,
-                  "bag": compose(autograd.Variable,
+                  "bag": compose(get_cuda,
+                                 autograd.Variable,
                                  torch.FloatTensor,
                                  pad_tuple)}
 
@@ -238,11 +240,11 @@ get_vocabulary_size = compose(len,
 
 def pad_variable(m):
     return torch.cat([m["encoder_embedded"],
-                      autograd.Variable(
+                      get_cuda(autograd.Variable(
                           torch.zeros(m["encoder_embedded"].size()[0],
                                       m["max_length"] -
                                       m["encoder_embedded"].size()[1],
-                                      m["encoder_embedded"].size()[2]))],
+                                      m["encoder_embedded"].size()[2])))],
                      dim=1)
 
 
@@ -266,8 +268,8 @@ def decode(reduction, element):
 
 def slide(coll):
     return tuple(concat(
-        [autograd.Variable(
-            torch.LongTensor(tuple(repeat(0, first(coll).size(0)))))],
+        [get_cuda(autograd.Variable(
+            torch.LongTensor(tuple(repeat(0, first(coll).size(0))))))],
         butlast(coll)))
 
 
@@ -310,8 +312,8 @@ def make_run_validation(m):
                                set_in(get_hyperparameter(),
                                       ["encoder_embedded"],
                                       encoder_output["packed_output"])),
-                           "input_bpe": autograd.Variable(
-                               torch.LongTensor([0]))})))["decoder_bpes"])
+                           "input_bpe": get_cuda(autograd.Variable(
+                               torch.LongTensor([0])))})))["decoder_bpes"])
     return run_validation
 
 
@@ -332,8 +334,8 @@ def make_run_batch(m):
                                   first(rnn.pad_packed_sequence(
                                       encoder_output["packed_output"],
                                       batch_first=True)))),
-                       "loss": autograd.Variable(
-                           torch.FloatTensor([0]))})))["loss"].backward()
+                       "loss": get_cuda(autograd.Variable(
+                           torch.FloatTensor([0])))})))["loss"].backward()
         m["encoder_optimizer"].step()
         m["decoder_optimizer"].step()
         # TODO log
