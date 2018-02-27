@@ -209,6 +209,7 @@ def make_get_variables(m):
                                                flip(get),
                                                "bag"))),
                            get_raw_data),
+                           # TODO glob by length
                            glob.glob(get_glob(m)))}))
     return get_variables
 
