@@ -324,22 +324,25 @@ def make_run_batch(m):
         encoder_output = m["encoder"]({"packed_input": rnn.pack_padded_sequence(
             first(element), second(element), batch_first=True),
             "hidden": get_hidden(set_in(m, ["split"], "training"))})
-        reduce(decode,
-               map(vector, slide(last(element)), last(element)),
-               (merge(m,
-                      {"hidden": encoder_output["hidden"],
-                       "encoder_embedded": pad_variable(
-                           set_in(get_hyperparameter(),
-                                  ["encoder_embedded"],
-                                  first(rnn.pad_packed_sequence(
-                                      encoder_output["packed_output"],
-                                      batch_first=True)))),
-                       "loss": get_cuda(autograd.Variable(
-                           torch.FloatTensor([0])))})))["loss"].backward()
+        loss = reduce(decode,
+                         map(vector, slide(last(element)), last(element)),
+                         (merge(m,
+                                {"hidden": encoder_output["hidden"],
+                                 "encoder_embedded": pad_variable(
+                                     set_in(get_hyperparameter(),
+                                            ["encoder_embedded"],
+                                            first(rnn.pad_packed_sequence(
+                                                encoder_output["packed_output"],
+                                                batch_first=True)))),
+                                 "loss": get_cuda(autograd.Variable(
+                                     torch.FloatTensor([0])))})))[
+            "loss"]
+        loss.backward()
         m["encoder_optimizer"].step()
         m["decoder_optimizer"].step()
         # TODO log
         if reduction["step_count"] % m["validation_frequency"] == 0:
+            print(loss)
             print(numpy.mean(tuple(map(make_run_validation(m),
                                        get_batches(
                                            set_in(m, ["split"],
