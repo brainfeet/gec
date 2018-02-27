@@ -193,6 +193,7 @@ def make_get_variables(m):
                            partial(partition, if_(m["split"] == "training",
                                                   m["batch_size"],
                                                   1)),
+                           # TODO extract a function
                            partial(filter,
                                    compose(partial(lt, m[
                                        "max_length"]),
