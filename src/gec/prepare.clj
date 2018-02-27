@@ -200,4 +200,4 @@
                dorun))))))
 
 (def split
-  (apply juxt (map make-split* [true false])))
+  (apply juxt (map make-split* [false true])))
