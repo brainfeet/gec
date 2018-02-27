@@ -26,7 +26,7 @@ import numpy
 
 from gec.clojure import *
 
-sys.argv = ["", "--timestamp", "20180218012812"]
+sys.argv = ["", "--timestamp", "20180227020415"]
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--timestamp")
@@ -53,7 +53,6 @@ class Encoder(nn.Module):
                           # TODO uncomment
                           # bidirectional=True
                           )
-
     def forward(self, m):
         packed_output, hidden = self.gru(m["packed_input"],
                                          m["hidden"])
@@ -71,7 +70,6 @@ class Decoder(nn.Module):
         self.dropout = nn.Dropout(m["dropout_probability"])
         self.gru = nn.GRU(m["hidden_size"], m["hidden_size"], batch_first=True)
         self.out = nn.Linear(m["hidden_size"], m["vocabulary_size"])
-
     def forward(self, m):
         embedded = self.dropout(self.embedding(m["input_bpe"])).unsqueeze(1)
         output, hidden = self.gru(F.relu(
