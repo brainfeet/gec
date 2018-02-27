@@ -6,6 +6,7 @@ import math
 import os
 import os.path as path
 import shutil
+import random
 
 from funcy import *
 import funcy
@@ -303,9 +304,6 @@ def make_run_validation(m):
         encoder_output = m["encoder"]({"packed_input": first(element),
                                        "hidden": get_hidden(
                                            set_in(m, ["split"], "validation"))})
-        print(tuple(map(
-            compose(partial(get, get_word_map(get_hyperparameter())), str, int),
-            last(element))))
         decoder_bpes = reduce(decode_validation,
                               slide(last(element)),
                               (merge(m,
@@ -318,7 +316,12 @@ def make_run_validation(m):
                                       "input_bpe": get_cuda(autograd.Variable(
                                           torch.LongTensor([0])))})))[
             "decoder_bpes"]
-        print(decoder_bpes)
+        if random.uniform(0, 1) < 0.1:
+            print(tuple(map(
+                compose(partial(get, get_word_map(get_hyperparameter())), str,
+                        int),
+                last(element))))
+            print(decoder_bpes)
         return nltk.translate.bleu_score.sentence_bleu(
             tuple(map(compose(partial(get, get_word_map(get_hyperparameter())),
                               str,
