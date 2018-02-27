@@ -200,6 +200,13 @@ def make_get_variables(m):
                                            partial(
                                                flip(get),
                                                "bpe"))),
+                           partial(filter,
+                                   compose(partial(lt, m[
+                                       "max_length"]),
+                                           len,
+                                           partial(
+                                               flip(get),
+                                               "bag"))),
                            get_raw_data),
                            glob.glob(get_glob(m)))}))
     return get_variables
