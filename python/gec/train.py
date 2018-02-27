@@ -303,18 +303,28 @@ def make_run_validation(m):
         encoder_output = m["encoder"]({"packed_input": first(element),
                                        "hidden": get_hidden(
                                            set_in(m, ["split"], "validation"))})
+        print(tuple(map(
+            compose(partial(get, get_word_map(get_hyperparameter())), str, int),
+            last(element))))
+        decoder_bpes = reduce(decode_validation,
+                              slide(last(element)),
+                              (merge(m,
+                                     {"hidden": encoder_output["hidden"],
+                                      "encoder_embedded": pad_variable(
+                                          set_in(get_hyperparameter(),
+                                                 ["encoder_embedded"],
+                                                 encoder_output[
+                                                     "packed_output"])),
+                                      "input_bpe": get_cuda(autograd.Variable(
+                                          torch.LongTensor([0])))})))[
+            "decoder_bpes"]
+        print(decoder_bpes)
         return nltk.translate.bleu_score.sentence_bleu(
-            last(element),
-            reduce(decode_validation,
-                   slide(last(element)),
-                   (merge(m,
-                          {"hidden": encoder_output["hidden"],
-                           "encoder_embedded": pad_variable(
-                               set_in(get_hyperparameter(),
-                                      ["encoder_embedded"],
-                                      encoder_output["packed_output"])),
-                           "input_bpe": get_cuda(autograd.Variable(
-                               torch.LongTensor([0])))})))["decoder_bpes"])
+            tuple(map(compose(partial(get, get_word_map(get_hyperparameter())),
+                              str,
+                              int),
+                      last(element))),
+            decoder_bpes)
     return run_validation
 
 
@@ -326,17 +336,17 @@ def make_run_batch(m):
             first(element), second(element), batch_first=True),
             "hidden": get_hidden(set_in(m, ["split"], "training"))})
         loss = reduce(decode,
-                         map(vector, slide(last(element)), last(element)),
-                         (merge(m,
-                                {"hidden": encoder_output["hidden"],
-                                 "encoder_embedded": pad_variable(
-                                     set_in(get_hyperparameter(),
-                                            ["encoder_embedded"],
-                                            first(rnn.pad_packed_sequence(
-                                                encoder_output["packed_output"],
-                                                batch_first=True)))),
-                                 "loss": get_cuda(autograd.Variable(
-                                     torch.FloatTensor([0])))})))[
+                      map(vector, slide(last(element)), last(element)),
+                      (merge(m,
+                             {"hidden": encoder_output["hidden"],
+                              "encoder_embedded": pad_variable(
+                                  set_in(get_hyperparameter(),
+                                         ["encoder_embedded"],
+                                         first(rnn.pad_packed_sequence(
+                                             encoder_output["packed_output"],
+                                             batch_first=True)))),
+                              "loss": get_cuda(autograd.Variable(
+                                  torch.FloatTensor([0])))})))[
             "loss"]
         loss.backward()
         m["encoder_optimizer"].step()
