@@ -316,11 +316,11 @@ def make_run_validation(m):
                                       "input_bpe": get_cuda(autograd.Variable(
                                           torch.LongTensor([0])))})))[
             "decoder_bpes"]
-        if random.uniform(0, 1) < 0.1:
-            print(tuple(map(
+        if random.uniform(0, 1) < 0.005:
+            print([tuple(map(
                 compose(partial(get, get_word_map(get_hyperparameter())), str,
                         int),
-                last(element))))
+                last(element)))])
             print(decoder_bpes)
         return nltk.translate.bleu_score.sentence_bleu(
             tuple(map(compose(partial(get, get_word_map(get_hyperparameter())),
